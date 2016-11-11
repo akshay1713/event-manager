@@ -1,0 +1,2 @@
+1) Reduce SQL queries, for instance user.findbyid can return teamid using join.
+2) use promisify all to fire all promises concurrently where possible instead of awaiting multiple statements.
