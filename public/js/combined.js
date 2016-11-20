@@ -270,19 +270,20 @@ const EventContainer = React.createClass({
 	componentWillMount: function(){
 	},
 	componentWillReceiveProps: function(next_props){
-		console.log(next_props);
 	},
 	componentDidMount: function(){
 		utils.ajax({
-				url:"/events",
-				method:"GET",
-				callback: (response) => {
-					combinedStore.dispatch({
-						type:"REFRESH_EVENTS",
-						events:response
-					});
-				}
-			});
+			url:"/events",
+			method:"GET",
+			callback: (response) => {
+				combinedStore.dispatch({
+					type:"REFRESH_EVENTS",
+					events:response
+				});
+			}
+		});
+
+
 	},
 	createEvent: function(){
 		const event_name = document.getElementById("event_name").value;
@@ -303,13 +304,81 @@ const EventContainer = React.createClass({
 			}
 		});
 	},
+	expandEvent: function(event_id){
+		utils.ajax({
+			url:"/events/"+event_id,
+			method:"GET",
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"UPDATE_CURRENT_TASKS",
+					tasks:response,
+					event_id
+				});
+			}
+		})
+	},
+	createTask: function(event_id){
+		const task_name = document.getElementById("task_name").value;
+		utils.ajax({
+			url:"/events/create_task/"+event_id,
+			method:"POST",
+			data:{task_name},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"CREATE_TASK",
+					tasks:response
+				});
+			}
+		});
+	},
+	assignTaskToUser:function(taskid,userid){
+		utils.ajax({
+			url:"/events/assign_task/"+taskid,
+			method:"POST",
+			data:{userid},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"ASSIGN_TASK",
+					task_details:{taskid,userid}
+				});
+			}
+		});
+	},
+	changeTaskStatus:function(taskid,new_status){
+		utils.ajax({
+			url:"/events/change_task_status/"+taskid,
+			method:"POST",
+			data:{new_status},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"CHANGE_TASK_STATUS",
+					task_details:{taskid,new_status}
+				});
+			}
+		});
+	},
+	createEventForm: function(event_id){
+		utils.ajax({
+			url:"/events/create_form/"+event_id,
+			method:"POST",
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"CREATE_FORM",
+					eventid:event_id
+				});
+			}
+		});
+	},
+
 	render: function(){
-		//console.log("TeamContainer ",this.props);
 		return (
-			<div>
+			<div>		
 			<h1>Events Page </h1>
-			<CreateEvent  createEventFunc = {this.createEvent}></CreateEvent>
-			<EventsList events = {this.props.events_state.events}/>
+			<CreateEvent  createEvent = {this.createEvent}></CreateEvent>
+			<EventsList events = {this.props.events_state.events} expandEvent = {this.expandEvent} createEventForm = {this.createEventForm}/>
+			<SelectedEventTasks tasks = {this.props.events_state.current_tasks} event_id ={this.props.events_state.current_event_id} 
+			createTask = {this.createTask} users = {this.props.user_state.users} assignTaskToUser = {this.assignTaskToUser} 
+			changeTaskStatus = {this.changeTaskStatus}/>
 			</div>
 		);
 	},
@@ -319,11 +388,10 @@ const EventContainer = React.createClass({
 const CreateEvent = React.createClass({
 
 	render: function(){
-		//console.log(this.props);
 		return (
 			<div>
 				<div><input type = "text" id = "event_name"></input></div>
-				<div><a href = "javascript:;" onClick = {this.props.createEventFunc.bind(this)}>Click here to create event</a></div>
+				<div><a href = "javascript:;" onClick = {this.props.createEvent}>Click here to create event</a></div>
 			</div>
 		);
 	}
@@ -331,11 +399,9 @@ const CreateEvent = React.createClass({
 
 const EventsList = React.createClass({
 	componentWillMount: function(){
-		//console.log("TeamMembers componentWillMount ",this.props);
 	},
 
 	componentDidMount:function(){
-		//console.log("TeamMembers ",this.props);
 	},
 
 	render: function(){
@@ -343,18 +409,63 @@ const EventsList = React.createClass({
 	},
 
 	renderEvent: function(event){
-		return <li>{event.name} ({event.date})</li>
+
+		return (<li><span onClick = {()=>this.props.expandEvent(event.id)}>{event.name}</span> &nbsp;
+		<span onClick = {()=>this.props.createEventForm(event.id)}>Create Registration Form</span></li>)
 	}
 });
 
-//console.log(window.ReactRedux);
+const SelectedEventTasks = React.createClass({
+	componentDidMount: function(){
+	},
+	componentWillReceiveProps:function(next_props){
+	},
+	render: function(){
+		return (
+			<div>
+			<h3>Tasks</h3>
+			<div><input type = "text" id = "task_name"></input> {this.props.event_id}</div>
+			<div><a href = "javascript:;" onClick = {()=>{this.props.createTask(this.props.event_id)}}>Click here to create event</a></div>
+				<ul>
+					{this.props.tasks.map(this.renderTask)}
+				</ul>
+			</div>
+		);
+	},
+	renderTask: function(task){
+		const is_unassigned = (!task.userid) ? true : false;
+		const is_pending = (task.status === "pending") ? true : false; 
+		return (
+			<li>
+			{task.name} 
+			<select onChange = {(e) => {this.props.assignTaskToUser(task.id,e.target.value)}}>
+			<option value="-1" selected = {is_unassigned}>Unassigned</option>
+			{this.props.users.map((user)=>{return this.renderUsersForTask(user,task)})}
+			</select>
+			<select onChange = {(e) => {this.props.changeTaskStatus(task.id,e.target.value)}}>
+			<option value="pending" selected = {is_pending}>Pending</option>
+			<option value="done" selected = {!is_pending}>Done</option>
+			</select>
+			</li>
+		);
+	},
+	renderUsersForTask: function(user,task){
+		const name_or_email = (user.is_active) ? user.firstname + user.lastname : user.email;
+		const is_assigned = user.id === task.userid;
+		return (
+			<option value = {user.id} selected = {is_assigned}>{name_or_email}</option>
+		);
+	}
+});
 
 const initialTeamState = {
 	users:[]
 };
 
 const initialEventState = {
-	events:[]
+	events:[],
+	current_tasks:[],
+	current_event_id:null
 };
 
 const team_members_reducer = (state = initialTeamState,action) => {
@@ -377,7 +488,36 @@ const events_reducer = (state = initialEventState,action) => {
 	else if (action.type === "REFRESH_EVENTS"){
 		events_state.events = action.events;
 	}
-	console.log(events_state,action);
+	else if (action.type === "UPDATE_CURRENT_TASKS"){
+		events_state.current_tasks = action.tasks;
+		events_state.current_event_id = action.event_id;
+	}
+	else if (action.type === "CREATE_TASK"){
+		events_state.current_tasks = events_state.current_tasks.concat(action.tasks);
+	}
+	else if (action.type === "ASSIGN_TASK"){
+		events_state.current_tasks.some((task) => {
+			if(task.id === action.task_details.taskid){
+				task.userid = action.task_details.userid
+				return true;
+			}
+		})
+	}
+	else if (action.type === "CHANGE_TASK_STATUS"){
+		events_state.current_tasks.some((task) => {
+			if(task.id === action.task_details.taskid){
+				task.status = action.task_details.status
+				return true;
+			}
+		})
+	}
+	else if (action.type === "CREATE_FORM"){
+		events_state.events.some((event) => {
+			 if(event.id === action.eventid){
+				 event.form_created = true;
+			 }
+		});
+	}
 	return events_state;
 }
 
@@ -408,13 +548,11 @@ const utils = {
 	}
 };
 let ApplicationState = {
-	location: window.location.hash
+	location: window.location.hash.replace(/^#\/?|\/$/g,'').split('/')[0],
+	params:[]
 };
 
 let target = document.getElementById("wrapper");
-
-const Provider = ReactRedux.Provider;
-console.log(Provider);
 
 ReactDOM.render(
       <MainApp test="val" />,
@@ -427,15 +565,15 @@ const set_application_state = function(state_changes){
 	Object.assign(ApplicationState,state_changes);
 	const target_content = document.getElementById("page-wrapper");
 	switch (ApplicationState.location){
-		case "#/team":
+		case "team":
 			ReactDOM.render(
 					<TeamContainer user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
-		case "#/events":
+		case "events":
 			ReactDOM.render(
-				<EventContainer events_state = {combinedStore.getState().eventState}/>,
+				<EventContainer events_state = {combinedStore.getState().eventState} user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
@@ -448,9 +586,23 @@ const set_application_state = function(state_changes){
 };
 
 const navigated = function(){
-	set_application_state({location:window.location.hash});
+	const hash_url_data = window.location.hash.replace(/^#\/?|\/$/g,"").split("/");
+	const location = hash_url_data[0];
+	hash_url_data.shift();
+	let params = [];
+	for(let i =  0; i < hash_url_data.length; i++){
+		(i%2 === 0) ? params[i].name = hash_url_data[i] : params[i].value = hash_url_data
+	}
+	set_application_state({location,params});
 };
-
+/*
+const navigateTo = function(url,params){
+	const desired_url = url;
+	params.forEach(function(param){
+		desired_url += 
+	});
+}
+*/
 window.addEventListener('hashchange', navigated, false);
 navigated();
 })();

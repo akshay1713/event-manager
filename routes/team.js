@@ -11,7 +11,6 @@ router.get('/', middleware.ensureAuthenticated ,async function (ctx, next){
 
 router.post('/invite_user',middleware.ensureAuthenticated, async function(ctx,next){
     console.log(Utils.getSessionParam(ctx,'teamid')+" "+Utils.getPostParams(ctx,'email'));
-    ctx.body = "ja";
     ctx.body = await TeamManager.inviteUser(Utils.getSessionParam(ctx,'teamid'),Utils.getPostParams(ctx,'email'));  
 });
 module.exports = router;

@@ -3,7 +3,8 @@ const config = {
 		username: 'root',
 		password: 'root',
 		name: 'knex_test',
-		host: '127.0.0.1'
+		host: '127.0.0.1',
+		port: 3300
 	},
 	oauth: {
 		clientID: '666643282620-93og63j8ljr7b2ufb2gcqkqdkp71f3q6.apps.googleusercontent.com',

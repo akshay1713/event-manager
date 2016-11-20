@@ -4,9 +4,9 @@ exports.up = function(knex, Promise) {
 		knex.schema.createTable('Tasks',function(table){
 			table.bigIncrements('id').primary();
 			table.string('name').notNullable();
-			table.bigInteger('userid').notNullable().unsigned();
+			table.bigInteger('userid').nullable().unsigned();
 			table.bigInteger('eventid').notNullable().unsigned();
-			table.string('status').notNullable();
+			table.string('status').notNullable().defaultTo('pending');
           	table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
             table.timestamp('updated_at').notNullable().defaultTo(knex.raw('now()'));
 			table.foreign('userid').references('User.id').onDelete('cascade');

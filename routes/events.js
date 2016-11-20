@@ -11,4 +11,45 @@ router.get('/', middleware.ensureAuthenticated ,async function (ctx, next){
 router.post('/create_event',middleware.ensureAuthenticated, async function(ctx,next){
     ctx.body = await EventsManager.createEvent(Utils.getPostParams(ctx,'event_name'),Utils.getSessionParam(ctx,'teamid'));
 });
+
+router.get('/:id',middleware.ensureAuthenticated, async function (ctx,next){
+    ctx.body = await EventsManager.getAllTasks(Utils.getUrlParams(ctx,'id'));
+});
+
+router.post('/create_task/:id',middleware.ensureAuthenticated, async function(ctx,next){
+    const res = await EventsManager.createTask(Utils.getPostParams(ctx,'task_name'),Utils.getUrlParams(ctx,'id'));
+    console.log(res);
+    ctx.body = res;
+});
+
+router.post('/assign_task/:task_id',middleware.ensureAuthenticated, async function(ctx,next){
+    ctx.body = await EventsManager.assignTask(Utils.getUrlParams(ctx,'task_id'),Utils.getPostParams(ctx,'userid'));
+});
+
+router.post('/change_task_status/:task_id',middleware.ensureAuthenticated, async function(ctx,next){
+    ctx.body = await EventsManager.changeTaskStatus(Utils.getUrlParams(ctx,'task_id'),Utils.getPostParams(ctx,'new_status'));
+});
+
+router.post('/create_form/:event_id',middleware.ensureAuthenticated, async function(ctx,next){
+    ctx.body = await EventsManager.createEventForm(Utils.getUrlParams(ctx,'event_id'));
+});
+
+router.get('/event_form/:id', async function(ctx,next){
+    const event_data = await EventsManager.getFormData(Utils.getUrlParams(ctx,'id'));
+    console.log(event_data);
+    await ctx.render('event_form',event_data[0]);
+});
+
+router.all('/submit_form', async function(ctx,next){
+    const attendee_data = {
+        email:Utils.getPostParams(ctx,'email'),
+        firstname:Utils.getPostParams(ctx,'firstname'),
+        lastname:Utils.getPostParams(ctx,'lastname'),
+        eventid:Utils.getPostParams(ctx,'id')
+    };
+    console.log("attendee_data received ", attendee_data);
+    const submit_status = await EventsManager.registerNewAttendee(attendee_data);
+    ctx.body = submit_status;
+});
+
 module.exports = router;

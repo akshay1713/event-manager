@@ -1,11 +1,9 @@
 let ApplicationState = {
-	location: window.location.hash
+	location: window.location.hash.replace(/^#\/?|\/$/g,'').split('/')[0],
+	params:[]
 };
 
 let target = document.getElementById("wrapper");
-
-const Provider = ReactRedux.Provider;
-console.log(Provider);
 
 ReactDOM.render(
       <MainApp test="val" />,
@@ -18,15 +16,15 @@ const set_application_state = function(state_changes){
 	Object.assign(ApplicationState,state_changes);
 	const target_content = document.getElementById("page-wrapper");
 	switch (ApplicationState.location){
-		case "#/team":
+		case "team":
 			ReactDOM.render(
 					<TeamContainer user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
-		case "#/events":
+		case "events":
 			ReactDOM.render(
-				<EventContainer events_state = {combinedStore.getState().eventState}/>,
+				<EventContainer events_state = {combinedStore.getState().eventState} user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
@@ -39,8 +37,22 @@ const set_application_state = function(state_changes){
 };
 
 const navigated = function(){
-	set_application_state({location:window.location.hash});
+	const hash_url_data = window.location.hash.replace(/^#\/?|\/$/g,"").split("/");
+	const location = hash_url_data[0];
+	hash_url_data.shift();
+	let params = [];
+	for(let i =  0; i < hash_url_data.length; i++){
+		(i%2 === 0) ? params[i].name = hash_url_data[i] : params[i].value = hash_url_data
+	}
+	set_application_state({location,params});
 };
-
+/*
+const navigateTo = function(url,params){
+	const desired_url = url;
+	params.forEach(function(param){
+		desired_url += 
+	});
+}
+*/
 window.addEventListener('hashchange', navigated, false);
 navigated();

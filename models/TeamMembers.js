@@ -28,7 +28,8 @@ const TeamMembers = {
 	getAllTeamMembers: (teamid) => {
 		return knex(table)
 		.join('User','User.id','TeamMembers.userid')
-		.select('User.firstname','User.lastname','User.status','User.email');
+		.where({'TeamMembers.teamid':teamid})
+		.select('User.firstname','User.lastname','User.status','User.email','User.id','TeamMembers.is_active');
 	}
 };
 

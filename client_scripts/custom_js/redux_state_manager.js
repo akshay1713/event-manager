@@ -1,11 +1,12 @@
-//console.log(window.ReactRedux);
 
 const initialTeamState = {
 	users:[]
 };
 
 const initialEventState = {
-	events:[]
+	events:[],
+	current_tasks:[],
+	current_event_id:null
 };
 
 const team_members_reducer = (state = initialTeamState,action) => {
@@ -28,7 +29,36 @@ const events_reducer = (state = initialEventState,action) => {
 	else if (action.type === "REFRESH_EVENTS"){
 		events_state.events = action.events;
 	}
-	console.log(events_state,action);
+	else if (action.type === "UPDATE_CURRENT_TASKS"){
+		events_state.current_tasks = action.tasks;
+		events_state.current_event_id = action.event_id;
+	}
+	else if (action.type === "CREATE_TASK"){
+		events_state.current_tasks = events_state.current_tasks.concat(action.tasks);
+	}
+	else if (action.type === "ASSIGN_TASK"){
+		events_state.current_tasks.some((task) => {
+			if(task.id === action.task_details.taskid){
+				task.userid = action.task_details.userid
+				return true;
+			}
+		})
+	}
+	else if (action.type === "CHANGE_TASK_STATUS"){
+		events_state.current_tasks.some((task) => {
+			if(task.id === action.task_details.taskid){
+				task.status = action.task_details.status
+				return true;
+			}
+		})
+	}
+	else if (action.type === "CREATE_FORM"){
+		events_state.events.some((event) => {
+			 if(event.id === action.eventid){
+				 event.form_created = true;
+			 }
+		});
+	}
 	return events_state;
 }
 

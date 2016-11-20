@@ -9,7 +9,8 @@ module.exports = {
       user: config.db.username,
       password: config.db.password,
       database: config.db.name,
-      charset: 'utf8'
+      charset: 'utf8',
+      port: config.db.port
     }
   },
 

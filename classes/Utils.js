@@ -5,7 +5,7 @@ const Utils = {
     },
 
     getUrlParams: (ctx,param) => {
-        return ctx.params.param
+        return ctx.params[param]
     },
 
     getSessionParam: (ctx,param) => {

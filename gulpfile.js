@@ -21,7 +21,8 @@ const scripts = {
 					'react-dom.js',
 					'redux.js',
 					'react-redux.js',
-					'jquery.js'
+					'jquery.js',
+					'routie.js'
 	]
 };
 
