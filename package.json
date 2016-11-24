@@ -1,5 +1,5 @@
 {
-  "name": "final_event_manager",
+  "name": "palmy-events",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -36,5 +36,8 @@
     "gulp-concat": "^2.6.0",
     "gulp-continuous-concat": "^0.1.1",
     "gulp-watch": "^4.0.0"
+  },
+  "engines": {
+    "node": "6.6.0"
   }
 }
