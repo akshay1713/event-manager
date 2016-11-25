@@ -18,6 +18,15 @@ module.exports = {
   },
 
   production: {
+    client: 'mysql',
+    connection: {
+      host: config.host,
+      user: config.db.username,
+      password: config.db.password,
+      database: config.db.name,
+      charset: 'utf8',
+      port: config.db.port
+    }
   }
 
 };
