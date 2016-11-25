@@ -4,10 +4,11 @@ const BaseModel = {
 	knex : require('knex')({
   	client: 'mysql',
 		connection: {
-			host: config.host,
+			host: config.db.host,
 			user: config.db.username,
 			password: config.db.password,
 			database: config.db.name,
+			port:config.db.port,
 			charset: 'utf8'
 		}
 	}),
