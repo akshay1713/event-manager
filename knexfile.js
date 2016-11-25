@@ -5,7 +5,7 @@ module.exports = {
   development: {
     client: 'mysql',
     connection: {
-      host: config.host,
+      host: config.db.host,
       user: config.db.username,
       password: config.db.password,
       database: config.db.name,
@@ -20,7 +20,7 @@ module.exports = {
   production: {
     client: 'mysql',
     connection: {
-      host: config.host,
+      host: config.db.host,
       user: config.db.username,
       password: config.db.password,
       database: config.db.name,
