@@ -1,6 +1,6 @@
-let ApplicationState = {
+window.ApplicationState = {
 	location: window.location.hash.replace(/^#\/?|\/$/g,'').split('/')[0],
-	params:[]
+	params:{}
 };
 
 let target = document.getElementById("wrapper");
@@ -10,21 +10,30 @@ ReactDOM.render(
       target
     );
 combinedStore.subscribe(() => {
-	set_application_state(window.location.hash)
+	set_application_state(ApplicationState);
 });
-const set_application_state = function(state_changes){
+const set_application_state = (state_changes) => {
 	Object.assign(ApplicationState,state_changes);
 	const target_content = document.getElementById("page-wrapper");
+	console.log("current location ",ApplicationState.location);
 	switch (ApplicationState.location){
 		case "team":
 			ReactDOM.render(
-					<TeamContainer user_state = {combinedStore.getState().teamState}/>,
+				<TeamContainer user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
 		case "events":
 			ReactDOM.render(
-				<EventContainer events_state = {combinedStore.getState().eventState} user_state = {combinedStore.getState().teamState}/>,
+				<EventsContainer events_state = {combinedStore.getState().eventState} 
+				user_state = {combinedStore.getState().teamState}/>,
+				target_content
+			);
+			break;
+		case "manage_event":
+			ReactDOM.render(
+				<ManageEventContainer current_event_state = {combinedStore.getState().currentEventState} 
+				user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
@@ -36,23 +45,28 @@ const set_application_state = function(state_changes){
 	}
 };
 
-const navigated = function(){
+const navigated = () => {
 	const hash_url_data = window.location.hash.replace(/^#\/?|\/$/g,"").split("/");
 	const location = hash_url_data[0];
 	hash_url_data.shift();
-	let params = [];
-	for(let i =  0; i < hash_url_data.length; i++){
-		(i%2 === 0) ? params[i].name = hash_url_data[i] : params[i].value = hash_url_data
+	let params = {};
+	for(let i =  0; i < hash_url_data.length; ++i){
+		params[hash_url_data[i]] = hash_url_data[++i];
 	}
 	set_application_state({location,params});
 };
-/*
-const navigateTo = function(url,params){
-	const desired_url = url;
+
+const navigateTo = (url,params) => {
+	let desired_url = url;
 	params.forEach(function(param){
-		desired_url += 
+		desired_url += "/" + param.name + "/" + param.value; 
 	});
+	window.location.hash = desired_url;
+};
+
+const getUrlParameter = (param_name) => {
+	return ApplicationState.params[param_name];
 }
-*/
+
 window.addEventListener('hashchange', navigated, false);
 navigated();

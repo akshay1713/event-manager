@@ -5,7 +5,6 @@ const Utils = require('../classes/Utils');
 
 router.get('/', middleware.ensureAuthenticated ,async function (ctx, next){
     ctx.body = await EventsManager.getAllEvents(Utils.getSessionParam(ctx,'teamid'));
-    
 });
 
 router.post('/create_event',middleware.ensureAuthenticated, async function(ctx,next){
@@ -13,13 +12,16 @@ router.post('/create_event',middleware.ensureAuthenticated, async function(ctx,n
 });
 
 router.get('/:id',middleware.ensureAuthenticated, async function (ctx,next){
-    ctx.body = await EventsManager.getAllTasks(Utils.getUrlParams(ctx,'id'));
+    ctx.body = await EventsManager.getEventData(Utils.getUrlParams(ctx,'id'));
+});
+
+router.post('/create_ticket/:id', middleware.ensureAuthenticated, async function(ctx,next){
+    ctx.body = await EventsManager.createTicket(Utils.getPostParams(ctx, 'ticket_name'), 
+    Utils.getPostParams(ctx, 'maximum_available'), Utils.getPostParams(ctx, 'max_per_person'), Utils.getUrlParams(ctx, 'id'));
 });
 
 router.post('/create_task/:id',middleware.ensureAuthenticated, async function(ctx,next){
-    const res = await EventsManager.createTask(Utils.getPostParams(ctx,'task_name'),Utils.getUrlParams(ctx,'id'));
-    console.log(res);
-    ctx.body = res;
+    ctx.body = await EventsManager.createTask(Utils.getPostParams(ctx,'task_name'),Utils.getUrlParams(ctx,'id'));
 });
 
 router.post('/assign_task/:task_id',middleware.ensureAuthenticated, async function(ctx,next){
@@ -47,9 +49,7 @@ router.all('/submit_form', async function(ctx,next){
         lastname:Utils.getPostParams(ctx,'lastname'),
         eventid:Utils.getPostParams(ctx,'id')
     };
-    console.log("attendee_data received ", attendee_data);
-    const submit_status = await EventsManager.registerNewAttendee(attendee_data);
-    ctx.body = submit_status;
+    ctx.body = await EventsManager.registerNewAttendee(attendee_data);
 });
 
 module.exports = router;

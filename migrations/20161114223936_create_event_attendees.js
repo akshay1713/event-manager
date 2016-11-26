@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
         knex.schema.createTable('EventAttendees',function(table){
             table.bigIncrements('id').primary();
             table.bigInteger('eventid').notNullable().unsigned();
-            table.string('email').notNullable().unique();
+            table.string('email').notNullable();
             table.string('firstname').nullable();
             table.string('lastname').nullable();
             table.string('phone_number').nullable();

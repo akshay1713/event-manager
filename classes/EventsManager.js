@@ -1,42 +1,56 @@
 const Events = require('../models/Events');
 const Tasks = require('../models/Tasks');
+const Tickets = require('../models/Tickets');
 const EventAttendees = require('../models/EventAttendees');
 
 const EventsManager = {
-    getAllEvents: async (teamid) => {
-        return await Events.getAllEvents(teamid);
+    getAllEvents: (teamid) => {
+        return Events.getAllEvents(teamid);
     },
 
-    createEvent: async (name,teamid) => {
-		return  await Events.createNew(name,teamid);
+    createEvent: (name,teamid) => {
+		return Events.createNew(name,teamid);
 	},
 
-    createTask: async (name,eventid) => {
-        return await Tasks.createNew(name,eventid);
-
+    getEventData: async function(eventid) {
+        const tasks = await this.getAllTasks(eventid);
+        const tickets = await this.getAllTickets(eventid);
+        return {tasks, tickets};
     },
 
-    getAllTasks: async (eventid) => {
+    createTicket: (name, maximum_available, max_per_person, eventid) => {
+        return Tickets.createNew(name,  maximum_available, max_per_person, eventid)
+    },
+
+    getAllTickets: (eventid) => {
+        return Tickets.getAllTickets(eventid);
+    },
+
+    createTask: (name,eventid) => {
+        return Tasks.createNew(name,eventid);
+    },
+
+    getAllTasks: (eventid) => {
         return Tasks.getAllTasks(eventid);
     },
 
-    assignTask: async (taskid,userid) => {
+    assignTask: (taskid,userid) => {
       return Tasks.assignTask(taskid,userid);
     },
 
-    changeTaskStatus: async (taskid,status) => {
+    changeTaskStatus: (taskid,status) => {
         return Tasks.changeTaskStatus(taskid,status);
     },
 
-    createEventForm: async (eventid) => {
+    createEventForm: (eventid) => {
         return Events.createEventForm(eventid);
     },
 
-    getFormData: async (eventid) => {
+    getFormData: (eventid) => {
         return Events.getFormData(eventid);
     },
 
-    registerNewAttendee: async (attendee_data) => {
+    registerNewAttendee: (attendee_data) => {
         return EventAttendees.createNew(attendee_data);
     }
     

@@ -14,7 +14,8 @@ const scripts = {
 				'navbar-view.js',
 				'home-view.js',
 				'team-view.js',
-				'event-view.js'
+				'event-view.js',
+				'manage_event-view.js'
 	],
 	external_js : [
 					'react.js',

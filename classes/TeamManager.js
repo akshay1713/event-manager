@@ -4,8 +4,8 @@ const User = require('../models/User');
 const TeamInvitations = require('../models/TeamInvitations');
 
 const TeamManager = {
-    getAllTeamMembers: async (teamid) => {
-        return await TeamMembers.getAllTeamMembers(teamid);
+    getAllTeamMembers: (teamid) => {
+        return TeamMembers.getAllTeamMembers(teamid);
     },
 
     inviteUser: async (teamid,email) => {

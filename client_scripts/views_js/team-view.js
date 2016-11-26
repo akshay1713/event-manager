@@ -2,7 +2,7 @@ const TeamContainer = React.createClass({
 	componentWillMount: function(){
 	},
 	componentWillReceiveProps: function(next_props){
-		console.log(next_props);
+		// console.log(next_props);
 	},
 	componentDidMount: function(){
 		utils.ajax({

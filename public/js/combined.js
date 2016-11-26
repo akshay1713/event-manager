@@ -185,7 +185,7 @@ const TeamContainer = React.createClass({
 	componentWillMount: function(){
 	},
 	componentWillReceiveProps: function(next_props){
-		console.log(next_props);
+		// console.log(next_props);
 	},
 	componentDidMount: function(){
 		utils.ajax({
@@ -266,7 +266,7 @@ const TeamMembers = React.createClass({
 	}
 });
 
-const EventContainer = React.createClass({
+const EventsContainer = React.createClass({
 	componentWillMount: function(){
 	},
 	componentWillReceiveProps: function(next_props){
@@ -305,57 +305,18 @@ const EventContainer = React.createClass({
 		});
 	},
 	expandEvent: function(event_id){
-		utils.ajax({
-			url:"/events/"+event_id,
-			method:"GET",
-			callback:(response) => {
-				combinedStore.dispatch({
-					type:"UPDATE_CURRENT_TASKS",
-					tasks:response,
-					event_id
-				});
-			}
-		})
-	},
-	createTask: function(event_id){
-		const task_name = document.getElementById("task_name").value;
-		utils.ajax({
-			url:"/events/create_task/"+event_id,
-			method:"POST",
-			data:{task_name},
-			callback:(response) => {
-				combinedStore.dispatch({
-					type:"CREATE_TASK",
-					tasks:response
-				});
-			}
-		});
-	},
-	assignTaskToUser:function(taskid,userid){
-		utils.ajax({
-			url:"/events/assign_task/"+taskid,
-			method:"POST",
-			data:{userid},
-			callback:(response) => {
-				combinedStore.dispatch({
-					type:"ASSIGN_TASK",
-					task_details:{taskid,userid}
-				});
-			}
-		});
-	},
-	changeTaskStatus:function(taskid,new_status){
-		utils.ajax({
-			url:"/events/change_task_status/"+taskid,
-			method:"POST",
-			data:{new_status},
-			callback:(response) => {
-				combinedStore.dispatch({
-					type:"CHANGE_TASK_STATUS",
-					task_details:{taskid,new_status}
-				});
-			}
-		});
+		navigateTo("/manage_event",[{name:"event_id",value:event_id}]);
+		// utils.ajax({
+		// 	url:"/events/"+event_id,
+		// 	method:"GET",
+		// 	callback:(response) => {
+		// 		combinedStore.dispatch({
+		// 			type:"UPDATE_CURRENT_TASKS",
+		// 			tasks:response,
+		// 			event_id
+		// 		});
+		// 	}
+		// })
 	},
 	createEventForm: function(event_id){
 		utils.ajax({
@@ -376,9 +337,6 @@ const EventContainer = React.createClass({
 			<h1>Events Page </h1>
 			<CreateEvent  createEvent = {this.createEvent}></CreateEvent>
 			<EventsList events = {this.props.events_state.events} expandEvent = {this.expandEvent} createEventForm = {this.createEventForm}/>
-			<SelectedEventTasks tasks = {this.props.events_state.current_tasks} event_id ={this.props.events_state.current_event_id} 
-			createTask = {this.createTask} users = {this.props.user_state.users} assignTaskToUser = {this.assignTaskToUser} 
-			changeTaskStatus = {this.changeTaskStatus}/>
 			</div>
 		);
 	},
@@ -415,6 +373,124 @@ const EventsList = React.createClass({
 	}
 });
 
+const ManageEventContainer = React.createClass({
+    componentWillMount: function(){},
+    componentDidMount: function(){
+		const event_id = getUrlParameter("event_id");
+        utils.ajax({
+			url:"/events/"+event_id,
+			method:"GET",
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"UPDATE_CURRENT_EVENT",
+					tasks:response.tasks,
+					tickets:response.tickets,
+					event_id
+				});
+			}
+		});
+    },
+    componentWillReceiveProps: function(next_props){
+	},
+	createTicket: function(event_id){
+		const ticket_name = document.getElementById("ticket_name").value;
+		const maximum_available = document.getElementById("maximum_available").value;
+		const max_per_person = document.getElementById("max_per_person").value;
+		utils.ajax({
+			url:"/events/create_ticket/"+event_id,
+			method:"POST",
+			data:{ticket_name, maximum_available, max_per_person},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"CREATE_TICKET",
+					tickets:[{name:ticket_name, maximum_available, booked: 0}]
+				});
+			}
+		});
+	},
+	createTask: function(event_id){
+		const task_name = document.getElementById("task_name").value;
+		utils.ajax({
+			url:"/events/create_task/"+event_id,
+			method:"POST",
+			data:{task_name},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"CREATE_TASK",
+					tasks:[{name: task_name, id: response[0], status: "pending", userid: null}]
+				});
+			}
+		});
+	},
+	assignTaskToUser:function(taskid,userid){
+		utils.ajax({
+			url:"/events/assign_task/"+taskid,
+			method:"POST",
+			data:{userid},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"ASSIGN_TASK",
+					task_details:{taskid,userid}
+				});
+			}
+		});
+	},
+	changeTaskStatus:function(taskid,new_status){
+		utils.ajax({
+			url:"/events/change_task_status/"+taskid,
+			method:"POST",
+			data:{new_status},
+			callback:(response) => {
+				combinedStore.dispatch({
+					type:"CHANGE_TASK_STATUS",
+					task_details:{taskid,new_status}
+				});
+			}
+		});
+	},
+	render: function(){
+		console.log("Rendering event data ",this.props);
+		return (
+			<div>
+			<h1>Event Data</h1>
+			<Tickets tickets = {this.props.current_event_state.tickets} event_id = {this.props.current_event_state.event_id}
+			createTicket = {this.createTicket}/>
+			<SelectedEventTasks tasks = {this.props.current_event_state.tasks} event_id ={this.props.current_event_state.event_id} 
+			createTask = {this.createTask} users = {this.props.user_state.users} assignTaskToUser = {this.assignTaskToUser} 
+			changeTaskStatus = {this.changeTaskStatus}/>
+			</div>
+			);
+	}
+});
+
+const Tickets = React.createClass({
+	componentDidMount: function(){
+	},
+	componentWillReceiveProps:function(next_props){
+	},
+	render: function(){
+		return (
+			<div>
+			<h3>Tickets</h3>
+			<div>Ticket name: <input type = "text" id = "ticket_name"></input> <br/>
+			Number of tickets to be issued: <input type = "text" id = "maximum_available"></input> <br/>
+			Maximum number of tickets to be issued to a single attendee: <input type = "text" id = "max_per_person"></input></div>
+			<div><a href = "javascript:;" onClick = {()=>{this.props.createTicket(this.props.event_id)}}>Click here to create a new ticket type</a></div>
+				<ul>
+					{this.props.tickets.map(this.renderTicket)}
+				</ul>
+			</div>
+		);
+	},
+	renderTicket: function(ticket){
+		return (
+			<li>
+			<span>Name: {ticket.name}</span> <span>Maximum Available: {ticket.maximum_available}</span> <span> Booked: {ticket.booked}</span> 
+			</li>
+		);
+	}
+});
+
 const SelectedEventTasks = React.createClass({
 	componentDidMount: function(){
 	},
@@ -425,7 +501,7 @@ const SelectedEventTasks = React.createClass({
 			<div>
 			<h3>Tasks</h3>
 			<div><input type = "text" id = "task_name"></input> {this.props.event_id}</div>
-			<div><a href = "javascript:;" onClick = {()=>{this.props.createTask(this.props.event_id)}}>Click here to create event</a></div>
+			<div><a href = "javascript:;" onClick = {()=>{this.props.createTask(this.props.event_id)}}>Click here to create task</a></div>
 				<ul>
 					{this.props.tasks.map(this.renderTask)}
 				</ul>
@@ -468,6 +544,13 @@ const initialEventState = {
 	current_event_id:null
 };
 
+const initialCurrentEventState = {
+	event_id:null,
+	tasks:[],
+	tickets:[],
+	form_created:null
+}
+
 const team_members_reducer = (state = initialTeamState,action) => {
 	let tm_state = state;
 	if(action.type === "INVITE_USER"){
@@ -488,15 +571,21 @@ const events_reducer = (state = initialEventState,action) => {
 	else if (action.type === "REFRESH_EVENTS"){
 		events_state.events = action.events;
 	}
-	else if (action.type === "UPDATE_CURRENT_TASKS"){
-		events_state.current_tasks = action.tasks;
-		events_state.current_event_id = action.event_id;
+	return events_state;
+};
+
+const current_events_reducer = (state = initialCurrentEventState, action) => {
+	let current_event_state = state;
+	if (action.type === "UPDATE_CURRENT_EVENT"){
+		current_event_state.tasks = action.tasks;
+		current_event_state.tickets = action.tickets;
+		current_event_state.event_id = action.event_id;
 	}
 	else if (action.type === "CREATE_TASK"){
-		events_state.current_tasks = events_state.current_tasks.concat(action.tasks);
+		current_event_state.tasks = current_event_state.tasks.concat(action.tasks);
 	}
 	else if (action.type === "ASSIGN_TASK"){
-		events_state.current_tasks.some((task) => {
+		current_event_state.tasks.some((task) => {
 			if(task.id === action.task_details.taskid){
 				task.userid = action.task_details.userid
 				return true;
@@ -504,31 +593,29 @@ const events_reducer = (state = initialEventState,action) => {
 		})
 	}
 	else if (action.type === "CHANGE_TASK_STATUS"){
-		events_state.current_tasks.some((task) => {
+		current_event_state.tasks.some((task) => {
 			if(task.id === action.task_details.taskid){
 				task.status = action.task_details.status
 				return true;
 			}
 		})
 	}
-	else if (action.type === "CREATE_FORM"){
-		events_state.events.some((event) => {
-			 if(event.id === action.eventid){
-				 event.form_created = true;
-			 }
-		});
+	else if (action.type === "CREATE_TICKET"){
+		current_event_state.tickets = current_event_state.tickets.concat(action.tickets);
 	}
-	return events_state;
-}
+	else if (action.type === "CREATE_FORM"){
+		current_event_state.form_created = true;
+	}
+	return current_event_state;
+};
 
 const combined_reducers = Redux.combineReducers({
 	teamState: team_members_reducer,
-	eventState: events_reducer
+	eventState: events_reducer,
+	currentEventState: current_events_reducer
 });
 
 const combinedStore = Redux.createStore(combined_reducers);
-
-
 const utils = {
 
 	ajax: (ajax_params) => {
@@ -546,10 +633,11 @@ const utils = {
 		const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return email_regex.test(email);
 	}
+	
 };
-let ApplicationState = {
+window.ApplicationState = {
 	location: window.location.hash.replace(/^#\/?|\/$/g,'').split('/')[0],
-	params:[]
+	params:{}
 };
 
 let target = document.getElementById("wrapper");
@@ -559,21 +647,30 @@ ReactDOM.render(
       target
     );
 combinedStore.subscribe(() => {
-	set_application_state(window.location.hash)
+	set_application_state(ApplicationState);
 });
-const set_application_state = function(state_changes){
+const set_application_state = (state_changes) => {
 	Object.assign(ApplicationState,state_changes);
 	const target_content = document.getElementById("page-wrapper");
+	console.log("current location ",ApplicationState.location);
 	switch (ApplicationState.location){
 		case "team":
 			ReactDOM.render(
-					<TeamContainer user_state = {combinedStore.getState().teamState}/>,
+				<TeamContainer user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
 		case "events":
 			ReactDOM.render(
-				<EventContainer events_state = {combinedStore.getState().eventState} user_state = {combinedStore.getState().teamState}/>,
+				<EventsContainer events_state = {combinedStore.getState().eventState} 
+				user_state = {combinedStore.getState().teamState}/>,
+				target_content
+			);
+			break;
+		case "manage_event":
+			ReactDOM.render(
+				<ManageEventContainer current_event_state = {combinedStore.getState().currentEventState} 
+				user_state = {combinedStore.getState().teamState}/>,
 				target_content
 			);
 			break;
@@ -585,24 +682,29 @@ const set_application_state = function(state_changes){
 	}
 };
 
-const navigated = function(){
+const navigated = () => {
 	const hash_url_data = window.location.hash.replace(/^#\/?|\/$/g,"").split("/");
 	const location = hash_url_data[0];
 	hash_url_data.shift();
-	let params = [];
-	for(let i =  0; i < hash_url_data.length; i++){
-		(i%2 === 0) ? params[i].name = hash_url_data[i] : params[i].value = hash_url_data
+	let params = {};
+	for(let i =  0; i < hash_url_data.length; ++i){
+		params[hash_url_data[i]] = hash_url_data[++i];
 	}
 	set_application_state({location,params});
 };
-/*
-const navigateTo = function(url,params){
-	const desired_url = url;
+
+const navigateTo = (url,params) => {
+	let desired_url = url;
 	params.forEach(function(param){
-		desired_url += 
+		desired_url += "/" + param.name + "/" + param.value; 
 	});
+	window.location.hash = desired_url;
+};
+
+const getUrlParameter = (param_name) => {
+	return ApplicationState.params[param_name];
 }
-*/
+
 window.addEventListener('hashchange', navigated, false);
 navigated();
 })();
