@@ -16,8 +16,9 @@ const events = require('./routes/events');
 const middleware = require('./middleware');
 
 const session = require('koa-generic-session');
+const redisStore = require('koa-redis');
 app.keys = ['your-session-secret'];
-app.use(convert(session()));
+app.use(convert(session()),{store:redisStore});
 
 // authentication
 require('./auth')
