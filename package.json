@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "./node_modules/.bin/nodemon bin/run",
+    "start": "./node_modules/.bin/nodemon bin/run  --ignore './client_scripts/**/*' --ignore 'public/*'",
     "koa": "./node_modules/.bin/runkoa bin/www",
     "pm2": "pm2 start bin/run ",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -36,7 +36,9 @@
     "gulp": "~3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-continuous-concat": "^0.1.1",
-    "gulp-watch": "^4.0.0"
+    "gulp-watch": "^4.0.0",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
   },
   "engines": {
     "node": "6.6.0"
