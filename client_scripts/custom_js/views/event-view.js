@@ -1,3 +1,7 @@
+const React = require('react');
+const utils = require('../utils.js');
+const combinedStore = require('../redux_state_manager.js');
+
 const EventsContainer = React.createClass({
 	componentWillMount: function(){
 	},
@@ -38,7 +42,7 @@ const EventsContainer = React.createClass({
 		});
 	},
 	expandEvent: function(event_id){
-		navigateTo("/manage_event",[{name:"event_id",value:event_id}]);
+		utils.navigateTo("/manage_event",[{name:"event_id",value:event_id}]);
 	},
 	createEventForm: function(event_id){
 		utils.ajax({
@@ -107,3 +111,5 @@ const EventsList = React.createClass({
 		<span onClick = {()=>this.props.createEventForm(event.id)}>Create Registration Form</span></li>)
 	}
 });
+
+module.exports = EventsContainer;

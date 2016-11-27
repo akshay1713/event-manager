@@ -1,3 +1,7 @@
+const React = require('react');
+const utils = require('../utils.js');
+const combinedStore = require('../redux_state_manager.js');
+
 const HomePage = React.createClass({
 	componentWillMount: function(){
 		//console.log("component will mount team");
@@ -11,3 +15,5 @@ const HomePage = React.createClass({
 			);
 	}
 });
+
+module.exports = HomePage;

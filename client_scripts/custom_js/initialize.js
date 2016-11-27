@@ -1,8 +1,13 @@
-window.ApplicationState = {
-	location: window.location.hash.replace(/^#\/?|\/$/g,'').split('/')[0],
-	params:{}
-};
-
+const ReactDOM = require('react-dom');
+const React = require('react');
+const combinedStore = require('./redux_state_manager.js');
+const MainApp = require('./views/navbar-view.js');
+const HomePage = require('./views/home-view.js');
+const TeamContainer = require('./views/team-view.js');
+const EventsContainer = require('./views/event-view.js');
+const ManageEventContainer = require('./views/manage_event-view.js');
+let ApplicationState = require('./application_state.js');
+console.log(ApplicationState, "is the ApplicationState");
 let target = document.getElementById("wrapper");
 
 ReactDOM.render(
@@ -56,17 +61,6 @@ const navigated = () => {
 	set_application_state({location,params});
 };
 
-const navigateTo = (url,params) => {
-	let desired_url = url;
-	params.forEach(function(param){
-		desired_url += "/" + param.name + "/" + param.value; 
-	});
-	window.location.hash = desired_url;
-};
-
-const getUrlParameter = (param_name) => {
-	return ApplicationState.params[param_name];
-}
-
 window.addEventListener('hashchange', navigated, false);
 navigated();
+

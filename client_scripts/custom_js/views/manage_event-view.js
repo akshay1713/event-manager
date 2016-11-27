@@ -1,7 +1,12 @@
+const React = require('react');
+const utils = require('../utils.js');
+const DateTime = require('react-datetime');
+const combinedStore = require('../redux_state_manager.js');
+
 const ManageEventContainer = React.createClass({
     componentWillMount: function(){},
     componentDidMount: function(){
-		const event_id = getUrlParameter("event_id");
+		const event_id = utils.getUrlParameter("event_id");
         utils.ajax({
 			url:"/events/"+event_id,
 			method:"GET",
@@ -74,7 +79,6 @@ const ManageEventContainer = React.createClass({
 		});
 	},
 	render: function(){
-		console.log("Rendering event data ",this.props);
 		return (
 			<div>
 			<h1>Event Data</h1>
@@ -158,3 +162,5 @@ const SelectedEventTasks = React.createClass({
 		);
 	}
 });
+
+module.exports = ManageEventContainer;

@@ -1,5 +1,7 @@
-
-//Start of main view template
+const React = require('react');
+const utils = require('../utils.js');
+const combinedStore = require('../redux_state_manager.js');
+const ApplicationState = require('../application_state.js');
 
 const MainApp = React.createClass({
     componentWillMount: function(){
@@ -166,4 +168,4 @@ const MainApp = React.createClass({
     }
 });
 
-//export default MailApp
+module.exports = MainApp;

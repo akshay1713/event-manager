@@ -1,3 +1,4 @@
+const Redux = require('redux');
 
 const initialTeamState = {
 	users:[]
@@ -81,3 +82,5 @@ const combined_reducers = Redux.combineReducers({
 });
 
 const combinedStore = Redux.createStore(combined_reducers);
+
+module.exports = combinedStore;

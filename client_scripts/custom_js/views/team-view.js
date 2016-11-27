@@ -1,3 +1,7 @@
+const React = require('react');
+const utils = require('../utils.js');
+const combinedStore = require('../redux_state_manager.js');
+
 const TeamContainer = React.createClass({
 	componentWillMount: function(){
 	},
@@ -59,7 +63,7 @@ const InviteTeamMember = React.createClass({
 		return (
 			<div>
 				<div><input type = "text" id = "invite_email"></input></div>
-				<div><a href = "javascript:;" onClick = {this.props.inviteUserFunc.bind(this)}>Click here to invite user</a></div>
+				<div><a href = "javascript:;" onClick = {this.props.inviteUserFunc.bind(null)}>Click here to invite user</a></div>
 			</div>
 		);
 	}
@@ -82,3 +86,5 @@ const TeamMembers = React.createClass({
 		return <li>{team_member.email} ({team_member.state})</li>
 	}
 });
+
+module.exports = TeamContainer;
