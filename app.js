@@ -18,16 +18,12 @@ const middleware = require('./middleware');
 const session = require('koa-generic-session');
 const redisStore = require('koa-redis');
 const MySQLStore = require('koa-mysql-session');
+
+const session_store_config = require('./config.js').session_store_config;
 app.keys = ['your-session-secret'];
 
-app.use(convert(session({store:new MySQLStore({    
-  database:"sessions",
-  host:"127.0.0.1",
-  port:3307,
-  user:"root",
-  password:"kri"
-}
-)})));
+console.log("using session config ",session_store_config);
+app.use(convert(session({store:new MySQLStore(session_store_config)})));
 
 
 // authentication
