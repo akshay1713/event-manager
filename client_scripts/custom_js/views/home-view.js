@@ -11,7 +11,7 @@ const HomePage = React.createClass({
 	},
 	render: function(){
 		return (
-			<h1>Hello </h1>
+			<h1>yahans dude </h1>
 			);
 	}
 });

@@ -8,14 +8,16 @@ router.get('/', middleware.ensureAuthenticated ,async function (ctx, next){
 });
 
 router.post('/create_event',middleware.ensureAuthenticated, async function(ctx,next){
-    ctx.body = await EventsManager.createEvent(Utils.getPostParams(ctx,'event_name'),Utils.getSessionParam(ctx,'teamid'));
+    ctx.body = await EventsManager.createEvent(Utils.getPostParams(ctx, 'event_name'), Utils.getPostParams(ctx, 'ticket_types') ,
+    Utils.getSessionParam(ctx, 'teamid'), Utils.getPostParams(ctx, 'event_start'), Utils.getPostParams(ctx, 'event_end'), 
+    Utils.getPostParams(ctx, 'venue'));
 });
 
 router.get('/:id',middleware.ensureAuthenticated, async function (ctx,next){
     ctx.body = await EventsManager.getEventData(Utils.getUrlParams(ctx,'id'));
 });
 
-router.post('/create_ticket/:id', middleware.ensureAuthenticated, async function(ctx,next){
+router.post('/add_ticket/:id', middleware.ensureAuthenticated, async function(ctx,next){
     ctx.body = await EventsManager.createTicket(Utils.getPostParams(ctx, 'ticket_name'), 
     Utils.getPostParams(ctx, 'maximum_available'), Utils.getPostParams(ctx, 'max_per_person'), Utils.getUrlParams(ctx, 'id'));
 });

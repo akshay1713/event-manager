@@ -8,8 +8,11 @@ const EventsManager = {
         return Events.getAllEvents(teamid);
     },
 
-    createEvent: (name,teamid) => {
-		return Events.createNew(name,teamid);
+    createEvent: async function(name, ticket_types, teamid, event_start, event_end, venue){
+        console.log("in createEvent ",event_start, event_end, venue);
+		const eventid_array = await Events.createNew(name, teamid, event_start, event_end, venue);
+        ticket_types.forEach((ticket_type) => {ticket_type.eventid = eventid_array[0]});
+        return this.createTickets(ticket_types);
 	},
 
     getEventData: async function(eventid) {
@@ -18,8 +21,8 @@ const EventsManager = {
         return {tasks, tickets};
     },
 
-    createTicket: (name, maximum_available, max_per_person, eventid) => {
-        return Tickets.createNew(name,  maximum_available, max_per_person, eventid)
+    createTickets: (ticket_data_array) => {
+        return Tickets.createNew(ticket_data_array)
     },
 
     getAllTickets: (eventid) => {

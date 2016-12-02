@@ -1,5 +1,5 @@
 const db_username = process.env.DB_USER_NAME || 'root';
-const db_password = process.env.DB_PASSWORD || 'ksh';
+const db_password = process.env.DB_PASSWORD || 'kri';
 const db_name = process.env.DB_NAME || 'knex_test';
 const db_host = process.env.DB_HOST || '127.0.0.1';
 const db_port = process.env.DB_PORT || 3307;

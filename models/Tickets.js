@@ -2,11 +2,10 @@ const knex = require('./BaseModel').knex;
 const table = 'Tickets';
 
 const Tickets = {
-	createNew: (name, maximum_available, max_per_person, eventid) => {
-        console.log(name, eventid);
+	createNew: (ticket_data_array) => {
 		return knex(table)
 		.returning('id','name')
-		.insert({name, maximum_available, max_per_person, eventid});
+		.insert(ticket_data_array);
 	},
 
     getAllTickets: (eventid) => {

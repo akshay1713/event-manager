@@ -17,8 +17,18 @@ const middleware = require('./middleware');
 
 const session = require('koa-generic-session');
 const redisStore = require('koa-redis');
+const MySQLStore = require('koa-mysql-session');
 app.keys = ['your-session-secret'];
-app.use(convert(session()),{store:redisStore});
+
+app.use(convert(session({store:new MySQLStore({    
+  database:"sessions",
+  host:"127.0.0.1",
+  port:3307,
+  user:"root",
+  password:"kri"
+}
+)})));
+
 
 // authentication
 require('./auth')
@@ -79,6 +89,5 @@ app.on('error', function(err, ctx){
   console.log(err)
   logger.error('server error', err, ctx);
 });
-
 
 module.exports = app;

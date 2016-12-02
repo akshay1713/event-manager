@@ -30,6 +30,14 @@ const utils = {
 
 	getUrlParameter: (param_name) => {
 		return ApplicationState.params[param_name];
+	},
+
+	updateReactState: (state, new_state_params) => {
+		let updated_state = state;
+		new_state_params.forEach((param) => {
+			updated_state[param.name] = param.value;
+		});
+		return updated_state;
 	}
 	
 };

@@ -1,3 +1,6 @@
+if (module.hot) {
+  module.hot.accept();
+}
 const ReactDOM = require('react-dom');
 const React = require('react');
 const combinedStore = require('./redux_state_manager.js');
@@ -7,7 +10,6 @@ const TeamContainer = require('./views/team-view.js');
 const EventsContainer = require('./views/event-view.js');
 const ManageEventContainer = require('./views/manage_event-view.js');
 let ApplicationState = require('./application_state.js');
-console.log(ApplicationState, "is the ApplicationState");
 let target = document.getElementById("wrapper");
 
 ReactDOM.render(
@@ -20,7 +22,6 @@ combinedStore.subscribe(() => {
 const set_application_state = (state_changes) => {
 	Object.assign(ApplicationState,state_changes);
 	const target_content = document.getElementById("page-wrapper");
-	console.log("current location ",ApplicationState.location);
 	switch (ApplicationState.location){
 		case "team":
 			ReactDOM.render(

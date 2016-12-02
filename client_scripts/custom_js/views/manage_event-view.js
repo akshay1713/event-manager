@@ -2,6 +2,7 @@ const React = require('react');
 const utils = require('../utils.js');
 const DateTime = require('react-datetime');
 const combinedStore = require('../redux_state_manager.js');
+const TicketTypes = require('./ticket_types-view.js')
 
 const ManageEventContainer = React.createClass({
     componentWillMount: function(){},
@@ -20,14 +21,12 @@ const ManageEventContainer = React.createClass({
 			}
 		});
     },
-    componentWillReceiveProps: function(next_props){
-	},
 	createTicket: function(event_id){
 		const ticket_name = document.getElementById("ticket_name").value;
 		const maximum_available = document.getElementById("maximum_available").value;
 		const max_per_person = document.getElementById("max_per_person").value;
 		utils.ajax({
-			url:"/events/create_ticket/"+event_id,
+			url:"/events/add_ticket/"+event_id,
 			method:"POST",
 			data:{ticket_name, maximum_available, max_per_person},
 			callback:(response) => {
@@ -97,17 +96,25 @@ const Tickets = React.createClass({
 	},
 	componentWillReceiveProps:function(next_props){
 	},
+	getInitialState: function(){
+		return {addMoreTickets:true}
+	},
+	toggleAddMoreTickets: function(){
+		this.setState({addMoreTickets: !addMoreTickets});
+	},
 	render: function(){
+		const add_tickets_class = (this.state.addMoreTickets) ? "" : "hidden";
 		return (
 			<div>
 			<h3>Tickets</h3>
-			<div>Ticket name: <input type = "text" id = "ticket_name"></input> <br/>
-			Number of tickets to be issued: <input type = "text" id = "maximum_available"></input> <br/>
-			Maximum number of tickets to be issued to a single attendee: <input type = "text" id = "max_per_person"></input></div>
 			<div><a href = "javascript:;" onClick = {()=>{this.props.createTicket(this.props.event_id)}}>Click here to create a new ticket type</a></div>
 				<ul>
 					{this.props.tickets.map(this.renderTicket)}
 				</ul>
+			<button></button>
+			<div className = {add_tickets_class}>
+				<TicketTypes/>
+			</div>
 			</div>
 		);
 	},

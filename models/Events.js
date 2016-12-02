@@ -2,11 +2,11 @@ const knex = require('./BaseModel').knex;
 const table = 'Events';
 
 const Events = {
-	createNew: (name,teamid) => {
-        console.log(name,teamid);
+	createNew: (name, teamid, event_start, event_end, venue) => {
+        console.log("in events create",event_start, event_end, venue);
 		return knex(table)
-		.returning('id','name')
-		.insert({name,teamid});
+		.returning('id')
+		.insert({name, teamid, event_start, event_end, venue});
 	},
 
     getAllEvents: (teamid) => {

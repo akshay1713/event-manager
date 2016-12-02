@@ -3,8 +3,9 @@ const webpack = require('webpack');
 module.exports = {
     entry: "./client_scripts/custom_js/initialize.js",
     output: {
-        path: "./public/js",
-        filename: "combined.js"
+        path: "/Users/akshaysingh/personal/event-manager/public/js",
+        filename: "combined.js",
+        publicPath: "/js/"
     },
     module: {
         loaders: [{
