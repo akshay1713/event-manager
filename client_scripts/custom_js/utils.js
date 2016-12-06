@@ -4,7 +4,6 @@ const config = require('./client_config.js');
 
 const utils = {
 	ajax: (ajax_params) => {
-		console.log(config.domain);
 		const url = config.domain + ajax_params.url;
 		const method = ajax_params.method ? ajax_params.method : "POST";
 		$.ajax({
@@ -20,12 +19,8 @@ const utils = {
 		return email_regex.test(email);
 	},
 
-	navigateTo: (url,params) => {
-		let desired_url = url;
-		params.forEach(function(param){
-			desired_url += "/" + param.name + "/" + param.value; 
-		});
-		window.location.hash = desired_url;
+	navigateTo: (url) => {
+		window.location.hash = url;
 	},
 
 	getUrlParameter: (param_name) => {

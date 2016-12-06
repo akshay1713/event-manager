@@ -1,4 +1,6 @@
 const config = require('../config');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const BaseModel = {
 	knex : require('knex')({
@@ -13,16 +15,14 @@ const BaseModel = {
 		}
 	}),
 
-	createNewRecord: function(table,data,returning){
-		data.created_at = Date.now();
-		data.updated_at = Date.now();
-		return this.knex(table)
-		.returning(returning)
-		.insert(data);
-	},
-
-	findExistingRecord: function(table,data){
-		return this.knex.select().from(table).where(data);
+	mongoose:{
+		createModel: (model_schema, model_name) => {
+			const modelSchema = new Schema(model_schema);
+			// autoIncrement.initialize(mongoose.connection);
+			// modelSchema.plugin(autoIncrement.plugin(model_name));
+			const new_model = mongoose.model(model_name, modelSchema);
+			return new_model;
+		}
 	}
 };
 

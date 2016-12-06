@@ -20,14 +20,16 @@ const redisStore = require('koa-redis');
 const MySQLStore = require('koa-mysql-session');
 
 const session_store_config = require('./config.js').session_store_config;
-app.keys = ['your-session-secret'];
 
-console.log("using session config ",session_store_config);
+const mongoose = require('mongoose');
+const mongodb_config = require('./config.js').mongodb_config
+app.keys = ['your-session-secret'];
 app.use(convert(session({store:new MySQLStore(session_store_config)})));
 
+const mongo_connection = mongoose.connect(mongodb_config.db_url);
 
 // authentication
-require('./auth')
+require('./auth');
 const passport = require('koa-passport')
 app.use(passport.initialize())
 app.use(passport.session())

@@ -4,6 +4,8 @@ const combinedStore = require('../redux_state_manager.js');
 const TicketTypes = require('./ticket_types-view.js');
 const DateTime = require("react-datetime");
 const moment = require('moment');
+var EventDescription = require('react-wysiwyg-editor');
+
 
 const EventsContainer = React.createClass({
 	componentWillMount: function(){
@@ -52,7 +54,7 @@ const EventsContainer = React.createClass({
 		});
 	},
 	expandEvent: function(event_id){
-		utils.navigateTo("/manage_event",[{name:"event_id",value:event_id}]);
+		utils.navigateTo(`/manage_event/event_id/${event_id}`);
 	},
 	toggleCreateEvent: function(){
 		this.setState({
@@ -61,16 +63,7 @@ const EventsContainer = React.createClass({
 		});
 	},
 	createEventForm: function(event_id){
-		utils.ajax({
-			url:"/events/create_form/"+event_id,
-			method:"POST",
-			callback:(response) => {
-				combinedStore.dispatch({
-					type:"CREATE_FORM",
-					eventid:event_id
-				});
-			}
-		});
+		utils.navigateTo(`/create_form/event_id/${event_id}`)
 	},
 	render: function(){
 		return (
@@ -92,7 +85,8 @@ const CreateEvent = React.createClass({
 			eventStartDate: moment(),
 			eventEndDate: moment(),
 			event_type: "real_world",
-			event_venue: ""
+			event_venue: "",
+			event_description:""
 		};
 	},
 	collectEventDataAndCreate: function(){
@@ -139,6 +133,11 @@ const CreateEvent = React.createClass({
 		this.state.event_venue = e.target.value;
 		this.setState(state);
 	},
+	updateEventDescription: function(e){
+		let state = this.state;
+		state.event_description = e.target.value;
+		this.setState(state);
+	},
 	render: function(){
 		let btn_text, create_class_name;
 		if(this.props.createEventHidden){
@@ -168,12 +167,11 @@ const CreateEvent = React.createClass({
 				<label>Event Venue: <textarea cols = "30" rows = "5" style={{verticalAlign:"top"}} 
 				value = {this.state.event_venue} onChange = {this.updateEventVenue}></textarea></label>
 				</div>
+				{/*<EventDescription className = "event_description" content = {this.state.event_description} onChange = {this.updateEventDescription}/>*/}
 				<div><a href = "javascript:;" onClick = {this.collectEventDataAndCreate}>Click here to create event</a></div>
 			</div>
 			</div>
 		);
-	},
-	renderTicketTypes: function(){
 	}
 });
 

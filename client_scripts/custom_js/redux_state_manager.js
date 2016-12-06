@@ -15,8 +15,22 @@ const initialCurrentEventState = {
 	tasks:[],
 	tickets:[],
 	form_created:null
-}
+};
 
+const initialFormElementState = {
+	fields:[]
+};
+
+const form_elements_reducer = (state = initialFormElementState, action) => {
+	let fe_state = state;
+	if(action.type === "UPDATE_FORM_FIELDS"){
+		fe_state.fields = action.fields;
+	}
+	else if(action.type === "ADD_FORM_ELEMENTS"){
+		fe_state.fields = fe_state.fields.concat(action.fields);
+	}
+	return fe_state;
+};
 const team_members_reducer = (state = initialTeamState,action) => {
 	let tm_state = state;
 	if(action.type === "INVITE_USER"){
@@ -78,7 +92,8 @@ const current_events_reducer = (state = initialCurrentEventState, action) => {
 const combined_reducers = Redux.combineReducers({
 	teamState: team_members_reducer,
 	eventState: events_reducer,
-	currentEventState: current_events_reducer
+	currentEventState: current_events_reducer,
+	formFieldState: form_elements_reducer
 });
 
 const combinedStore = Redux.createStore(combined_reducers);

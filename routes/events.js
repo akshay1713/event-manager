@@ -38,18 +38,27 @@ router.post('/create_form/:event_id',middleware.ensureAuthenticated, async funct
     ctx.body = await EventsManager.createEventForm(Utils.getUrlParams(ctx,'event_id'));
 });
 
-router.get('/event_form/:id', async function(ctx,next){
+router.get('/event_form/:id', middleware.ensureAuthenticated, async function(ctx,next){
     const event_data = await EventsManager.getFormData(Utils.getUrlParams(ctx,'id'));
     console.log(event_data);
     await ctx.render('event_form',event_data[0]);
 });
 
-router.all('/submit_form', async function(ctx,next){
+router.post('/add_form_fields/:event_id', middleware.ensureAuthenticated, async function(ctx, next){
+    ctx.body = await EventsManager.addRegistrationFormFields(Utils.getUrlParams(ctx, 'event_id'), Utils.getPostParams(ctx, 'form_fields'))
+});
+
+router.post('/get_form_elements/:event_id', middleware.ensureAuthenticated, async function(ctx, next){
+    const res = await EventsManager.getEventFormElements(Utils.getUrlParams(ctx, 'event_id'));
+    ctx.body = res;
+});
+
+router.all('/submit_form', middleware.ensureAuthenticated, async function(ctx,next){
     const attendee_data = {
         email:Utils.getPostParams(ctx,'email'),
         firstname:Utils.getPostParams(ctx,'firstname'),
         lastname:Utils.getPostParams(ctx,'lastname'),
-        eventid:Utils.getPostParams(ctx,'id')
+        eventid:1
     };
     ctx.body = await EventsManager.registerNewAttendee(attendee_data);
 });

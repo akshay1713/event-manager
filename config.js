@@ -9,7 +9,7 @@ const session_store_user = process.env.SESSION_STORE_USER || 'root';
 const session_store_db = process.env.SESSION_STORE_DB || 'sessions';
 const session_store_password = process.env.SESSION_STORE_PASSWORD || 'kri';
 const session_store_port = process.env.SESSION_STORE_PORT || 3307
-
+const mongodb_uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/event_attendees'
 const config = {
 	db: {
 		username: db_username,
@@ -26,6 +26,10 @@ const config = {
 
 	session_store_config: {
 		host:session_store_host, database:session_store_db, user:session_store_user, password:session_store_password, port:session_store_port
+	},
+
+	mongodb_config: {
+		db_url: mongodb_uri
 	}
 };
 

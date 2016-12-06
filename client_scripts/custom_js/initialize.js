@@ -9,6 +9,7 @@ const HomePage = require('./views/home-view.js');
 const TeamContainer = require('./views/team-view.js');
 const EventsContainer = require('./views/event-view.js');
 const ManageEventContainer = require('./views/manage_event-view.js');
+const EventForm = require('./views/event_form-view');
 let ApplicationState = require('./application_state.js');
 let target = document.getElementById("wrapper");
 
@@ -40,6 +41,12 @@ const set_application_state = (state_changes) => {
 			ReactDOM.render(
 				<ManageEventContainer current_event_state = {combinedStore.getState().currentEventState} 
 				user_state = {combinedStore.getState().teamState}/>,
+				target_content
+			);
+			break;
+		case "create_form":
+			ReactDOM.render(
+				<EventForm fields = {combinedStore.getState().formFieldState.fields}/>,
 				target_content
 			);
 			break;

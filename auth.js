@@ -2,7 +2,7 @@ const passport = require('koa-passport')
 const util = require('util');
 const LoginManager = require('./classes/LoginManager');
 
-const oauth_callback_url = process.env.OAUTH_CALLBACK_URL || 'http://127.0.0.1:1337/google_callback';
+const oauth_callback_url = process.env.OAUTH_CALLBACK_URL || 'http://127.0.0.1:3000/google_callback';
 
 passport.serializeUser(function(user, done) {
   done(null, user)
