@@ -86,13 +86,18 @@ const CreateEvent = React.createClass({
 			eventEndDate: moment(),
 			event_type: "real_world",
 			event_venue: "",
-			event_description:""
+			event_description:"",
+			focused_element:"",
+			form_elements_focused:{
+				"event_name":"",
+				"event_venue":""
+			}
 		};
 	},
 	collectEventDataAndCreate: function(){
 		const event_name = document.getElementById("event_name").value;
 		let ticket_types = [];
-		const ticket_types_rows = document.querySelectorAll("#create_ticket_types tbody tr");
+		const ticket_types_rows = document.querySelectorAll(".create_ticket_types tbody tr");
 		ticket_types_rows.forEach((row) => {
 			let ticket_type = {};
 			ticket_type.name = row.querySelector(".ticket_name").value;
@@ -138,6 +143,21 @@ const CreateEvent = React.createClass({
 		state.event_description = e.target.value;
 		this.setState(state);
 	},
+	updateFocusedElement: function(element){
+		let state = this.state;
+		state.form_elements_focused[state.focused_element] = "",
+		state.form_elements_focused[element] = "is-focused";
+		state.focused_element = element;
+		this.setState(state);
+	},
+	clearFocusedElement: function(){
+		let state = this.state;
+		state.focused_element = "";
+		Object.keys(state.form_elements_focused).forEach((key) => {
+			state.form_elements_focused[key] = "";
+		});
+		this.setState(state);
+	},
 	render: function(){
 		let btn_text, create_class_name;
 		if(this.props.createEventHidden){
@@ -151,24 +171,46 @@ const CreateEvent = React.createClass({
 		let venue_class_name = (this.state.event_type === "real_world") ? "" : "hidden";
 		return (
 			<div>
-			<button onClick = {()=>{this.props.toggleCreateEvent()}}>{btn_text}</button>
-			<div className = {create_class_name}>
-				<div><input type = "text" id = "event_name"></input></div>
+			<button onClick = {()=>{this.props.toggleCreateEvent()}} className="btn btn-primary text-center">
+			{btn_text}
+			<div className="ripple-container"></div>
+			</button>
+			<div className = {create_class_name + " card"}>
+			<div className="card-header" data-background-color="purple">
+				<h4 className = "title">Event Details</h4>
+				<p className = "category">Enter event details</p>
+			</div>
+			<div className = "card-content">
+				<div className = {this.state.form_elements_focused["event_name"] + " form-group label-floating is-empty event_name"} 
+				onClick = {()=>{this.updateFocusedElement("event_name")}} onBlur = {this.clearFocusedElement}>
+				<label className="control-label">Event Name</label>
+				<input type = "text" id = "event_name" className="form-control" ></input>
+				<span className="material-input"></span>
+				</div>
+				<label className="event_date_label">Event starts on: </label>
+				<DateTime onChange = {this.updateEventStartDate} value = {this.state.eventStartDate}/>
+				<label className="event_date_label">Event ends on: </label><DateTime onChange = {this.updateEventEndDate} value = {this.state.eventEndDate}/>
 				<TicketTypes total_ticket_types = {4}/>	
-				Event starts on: <DateTime onChange = {this.updateEventStartDate} value = {this.state.eventStartDate}/>
-				Event ends on: <DateTime onChange = {this.updateEventEndDate} value = {this.state.eventEndDate}/>
 				<br/>
-				<label><input type = "radio" value = "real_world" checked = 
-				{this.state.event_type === "real_world"} onChange = {this.updateEventType}/> Real World</label>
-				&nbsp;
-				<label><input type = "radio" value = "virtual" checked = 
-				{this.state.event_type === "virtual"} onChange = {this.updateEventType}/> Virtual</label>
-				<div className = {venue_class_name}>
-				<label>Event Venue: <textarea cols = "30" rows = "5" style={{verticalAlign:"top"}} 
-				value = {this.state.event_venue} onChange = {this.updateEventVenue}></textarea></label>
+				<div><label>Type of Event:</label></div>
+				<div className="event_type_container">
+				<div className="event_type_btn_container">
+					<label className="event_type_label"><input type = "radio" value = "real_world" checked = 
+					{this.state.event_type === "real_world"} onChange = {this.updateEventType}/> Real World</label>
+					&nbsp;
+					<label className="event_type_label"><input type = "radio" value = "virtual" checked = 
+					{this.state.event_type === "virtual"} onChange = {this.updateEventType}/> Virtual</label>
+				</div>
+				<div className = {this.state.form_elements_focused["event_venue"] + " form-group label-floating is-empty no_margin "+venue_class_name} 
+				onClick = {()=>{this.updateFocusedElement("event_venue")}} onBlur = {this.clearFocusedElement}>
+				<label className="control-label">Event Venue</label>
+				<textarea id = "event_name" className="form-control" cols="30" rows="5"></textarea>
+				<span className="material-input"></span>
+				</div>
 				</div>
 				{/*<EventDescription className = "event_description" content = {this.state.event_description} onChange = {this.updateEventDescription}/>*/}
 				<div><a href = "javascript:;" onClick = {this.collectEventDataAndCreate}>Click here to create event</a></div>
+			</div>
 			</div>
 			</div>
 		);
@@ -178,12 +220,36 @@ const CreateEvent = React.createClass({
 
 const EventsList = React.createClass({
 	render: function(){
-		const create_class_name = (this.props.showEventsList) ? "" : "hidden";
-		return <ul className = {create_class_name}>{this.props.events.map(this.renderEvent)}</ul>
+		const create_class_name = (this.props.showEventsList || !this.props.events) ? "" : "hidden";
+		return (
+			<div className={create_class_name+" card"}>
+			<div className="card-header" data-background-color="purple">
+				<h4 className="title">Events</h4>
+				<p className="category">A list of all events created till now</p>
+	        </div>
+			<div className="card-content table-responsive">
+	        	<table className="table">
+				<thead className="text-primary">
+				<tr>
+				<th>Event Name</th>
+				<th>Registration Form</th>
+				</tr>
+				</thead>
+				<tbody>
+				{this.props.events.map(this.renderEvent)}
+				</tbody>
+				</table>
+			</div>
+			</div>
+		);
 	},
 	renderEvent: function(event){
-		return (<li><span onClick = {()=>this.props.expandEvent(event.id)}>{event.name}</span> &nbsp;
-		<span onClick = {()=>this.props.createEventForm(event.id)}>Create Registration Form</span></li>)
+		return (
+			<tr>
+			<td onClick = {()=>this.props.expandEvent(event.id)}>{event.name}</td>
+			<td onClick = {()=>this.props.createEventForm(event.id)}> Create Registration Form</td>
+			</tr>
+		);
 	}
 });
 
