@@ -1,6 +1,7 @@
 const React = require('react');
 const utils = require('../utils.js');
 const combinedStore = require('../redux_state_manager.js');
+import Validation from 'react-validation';
 
 const TeamContainer = React.createClass({
 	componentWillMount: function(){
@@ -63,7 +64,7 @@ const InviteTeamMember = React.createClass({
 		return (
 			<div>
 				<div><input type = "text" id = "invite_email"></input></div>
-				<div><a href = "javascript:;" onClick = {this.props.inviteUserFunc.bind(null)}>Click here to invite user</a></div>
+				<div><a href = "javascript:;" onClick = {()=>{this.props.inviteUserFunc()}}>Click here to invite user</a></div>
 			</div>
 		);
 	}

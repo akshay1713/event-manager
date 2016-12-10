@@ -4,19 +4,15 @@ const combinedStore = require('../redux_state_manager.js');
 const TicketTypes = require('./ticket_types-view.js');
 const DateTime = require("react-datetime");
 const moment = require('moment');
-var EventDescription = require('react-wysiwyg-editor');
+import Ink from 'react-ink';
 
 
 const EventsContainer = React.createClass({
 	componentWillMount: function(){
 	},
 	componentWillReceiveProps: function(next_props){
-		if(next_props.events_state.events.length > this.props.events_state.events.length){
-			this.setState({
-				createEventHidden:true,
-				createEventForm:true	
-			});
-		}
+		console.log("received next props ",next_props);
+		this.setState({createEventForm:true,createEventHidden:true});
 	},
 	getInitialState: function(){
 		return {
@@ -37,16 +33,19 @@ const EventsContainer = React.createClass({
 		});
 	},
 	createEvent: function(event_name, ticket_types, event_start, event_end, venue){
+		let state = this.state;
+		this.state.is_disabled = "disabled";
+		this.setState(state);
 		utils.ajax({
 			url:"/events/create_event",
 			data:{event_name, ticket_types, event_start, event_end, venue},
 			method:"POST",
 			callback: (response) => {
 				if(response.length>0){
-					combinedStore.dispatch({
-						type:"CREATE_EVENT",
-						events:response
-					});
+					// combinedStore.dispatch({
+					// 	type:"CREATE_EVENT",
+					// 	events:response
+					// });
 				}
 				else{
 				}
@@ -66,9 +65,9 @@ const EventsContainer = React.createClass({
 		utils.navigateTo(`/create_form/event_id/${event_id}`)
 	},
 	render: function(){
+		console.log("event props are ",this.props," event state is ",this.state);
 		return (
 			<div>		
-			<h1>Events Pages</h1>
 			<CreateEvent  createEvent = {this.createEvent} toggleCreateEvent = {this.toggleCreateEvent} 
 			createEventHidden = {this.state.createEventHidden}></CreateEvent>
 			<EventsList events = {this.props.events_state.events} expandEvent = {this.expandEvent}
@@ -76,7 +75,6 @@ const EventsContainer = React.createClass({
 			</div>
 		);
 	},
-	
 });
 
 const CreateEvent = React.createClass({
@@ -91,11 +89,23 @@ const CreateEvent = React.createClass({
 			form_elements_focused:{
 				"event_name":"",
 				"event_venue":""
-			}
+			},
+			form_error_elements:{
+				"event_name":"invisible",
+				"ticket_types":"invisible",
+				"event_type":"invisible"
+			},
+			is_disabled:false
 		};
 	},
 	collectEventDataAndCreate: function(){
+		let is_invalid = false;
+		let state = this.state;
 		const event_name = document.getElementById("event_name").value;
+		if(!event_name){
+			state.form_error_elements.event_name = "";
+			is_invalid = true;
+		}
 		let ticket_types = [];
 		const ticket_types_rows = document.querySelectorAll(".create_ticket_types tbody tr");
 		ticket_types_rows.forEach((row) => {
@@ -103,6 +113,10 @@ const CreateEvent = React.createClass({
 			ticket_type.name = row.querySelector(".ticket_name").value;
 			ticket_type.maximum_available = row.querySelector(".max_per_person").value;
 			ticket_type.max_per_person = row.querySelector(".max_per_person").value;
+			if(!ticket_type.name || !ticket_type.maximum_available || !ticket_type.max_per_person){
+				state.form_error_elements.ticket_types = "";
+				is_invalid = true;
+			}
 			ticket_types.push(ticket_type);
 		});
 		let date_obj = new Date(this.state.eventStartDate.toString());
@@ -110,7 +124,25 @@ const CreateEvent = React.createClass({
 		date_obj = new Date(this.state.eventEndDate.toString());
 		const event_end = moment(date_obj.toUTCString()).format('YYYY-MM-DD hh:mm:ss');
 		const venue = this.state.event_venue;
+		if(!venue && state.event_type === "real_world"){
+			state.form_error_elements.event_type = "";
+			is_invalid = true;
+		}
+		if(is_invalid){
+			this.setState(state);
+			setTimeout(this.clearWarnings,5000);
+			return;
+		}
 		this.props.createEvent(event_name, ticket_types, event_start, event_end, venue);
+	},
+	clearWarnings:function(){
+		console.log("clearing warnings");
+		let state = this.state;
+		Object.keys(state.form_error_elements).forEach((error_element)=>{
+			state.form_error_elements[error_element] = "invisible";
+		});
+		this.setState(state);
+		return;
 	},
 	updateEventStartDate: function(date){
 		let state = this.state;
@@ -168,29 +200,39 @@ const CreateEvent = React.createClass({
 			btn_text = "Maybe Later";
 			create_class_name = "";
 		}
-		let venue_class_name = (this.state.event_type === "real_world") ? "" : "hidden";
+		let venue_class_name = (this.state.event_type === "real_world") ? "" : "invisible";
 		return (
 			<div>
-			<button onClick = {()=>{this.props.toggleCreateEvent()}} className="btn btn-primary text-center">
-			{btn_text}
-			<div className="ripple-container"></div>
-			</button>
+				<div className="text-center">
+					<button onClick = {()=>{this.props.toggleCreateEvent()}} className="btn btn-primary">
+					{btn_text}
+						<Ink />
+					</button>
+				</div>
 			<div className = {create_class_name + " card"}>
 			<div className="card-header" data-background-color="purple">
 				<h4 className = "title">Event Details</h4>
 				<p className = "category">Enter event details</p>
 			</div>
 			<div className = "card-content">
-				<div className = {this.state.form_elements_focused["event_name"] + " form-group label-floating is-empty event_name"} 
+			<fieldset disabled = {this.state.is_disabled}>
+				<div>
+				<div className="display_inline_block event_name_container">
+				<div className = {this.state.form_elements_focused["event_name"] + " no_margin form-group event_name"} 
 				onClick = {()=>{this.updateFocusedElement("event_name")}} onBlur = {this.clearFocusedElement}>
-				<label className="control-label">Event Name</label>
-				<input type = "text" id = "event_name" className="form-control" ></input>
+				<input type = "text" id = "event_name" className="form-control" placeholder="Event Name"></input>
 				<span className="material-input"></span>
+				</div><br/>
+				<span className={this.state.form_error_elements["event_name"] + " input_error"}>Event name is required</span>
 				</div>
-				<label className="event_date_label">Event starts on: </label>
-				<DateTime onChange = {this.updateEventStartDate} value = {this.state.eventStartDate}/>
-				<label className="event_date_label">Event ends on: </label><DateTime onChange = {this.updateEventEndDate} value = {this.state.eventEndDate}/>
-				<TicketTypes total_ticket_types = {4}/>	
+				<label className="event_date_label valign_top">Event starts on: </label>
+				<DateTime onChange = {this.updateEventStartDate} value = {this.state.eventStartDate} className="valign_top"/>
+				<label className="event_date_label valign_top">Event ends on: </label><DateTime className="valign_top" onChange = {this.updateEventEndDate} value = {this.state.eventEndDate}/>
+				</div>
+				<div className = "ticket_types_container">
+				<TicketTypes total_ticket_types = {4}/>
+				<span className={this.state.form_error_elements["ticket_types"] + " input_error"}>At least one type is required (All fields are mandatory for a single ticket type. You can change them later)</span>
+				</div>
 				<br/>
 				<div><label>Type of Event:</label></div>
 				<div className="event_type_container">
@@ -201,15 +243,23 @@ const CreateEvent = React.createClass({
 					<label className="event_type_label"><input type = "radio" value = "virtual" checked = 
 					{this.state.event_type === "virtual"} onChange = {this.updateEventType}/> Virtual</label>
 				</div>
-				<div className = {this.state.form_elements_focused["event_venue"] + " form-group label-floating is-empty no_margin "+venue_class_name} 
+				<div className = {venue_class_name}>
+				<div className = {this.state.form_elements_focused["event_venue"] + " form-group no_margin "} 
 				onClick = {()=>{this.updateFocusedElement("event_venue")}} onBlur = {this.clearFocusedElement}>
-				<label className="control-label">Event Venue</label>
-				<textarea id = "event_name" className="form-control" cols="30" rows="5"></textarea>
+				<textarea id = "event_name" className="form-control" cols="50" rows="3" placeholder="Event Venue" 
+				onBlur={this.updateEventVenue}></textarea>
 				<span className="material-input"></span>
+				</div>
+				<span className={this.state.form_error_elements["event_type"] + " input_error"}>Venue is required for real world events. You can change it later</span>
 				</div>
 				</div>
 				{/*<EventDescription className = "event_description" content = {this.state.event_description} onChange = {this.updateEventDescription}/>*/}
-				<div><a href = "javascript:;" onClick = {this.collectEventDataAndCreate}>Click here to create event</a></div>
+				<div className="text-center">
+					<button  className="btn btn-primary no_margin" onClick={this.collectEventDataAndCreate}>Create Event!
+						<Ink/>
+					</button>
+				</div>
+			</fieldset>
 			</div>
 			</div>
 			</div>

@@ -11,10 +11,10 @@ const EventsContainer = require('./views/event-view.js');
 const ManageEventContainer = require('./views/manage_event-view.js');
 const EventForm = require('./views/event_form-view');
 let ApplicationState = require('./application_state.js');
-let target = document.getElementById("wrapper");
+let target = document.getElementById("em_wrapper");
 
 ReactDOM.render(
-      <MainApp test="val" />,
+      <MainApp/>,
       target
     );
 combinedStore.subscribe(() => {
@@ -22,7 +22,7 @@ combinedStore.subscribe(() => {
 });
 const set_application_state = (state_changes) => {
 	Object.assign(ApplicationState,state_changes);
-	const target_content = document.getElementById("page-wrapper");
+	const target_content = document.getElementById("em_page_wrapper");
 	switch (ApplicationState.location){
 		case "team":
 			ReactDOM.render(

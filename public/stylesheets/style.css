@@ -5942,7 +5942,7 @@ footer .btn {
 
 /************************************ CUSTOMIZED CSS ONLY BELOW THIS. THIRD PARTY CSS ABOVE ********************************/
 .event_name{
-  width:50%;
+  width:100%;
   display:inline-block;
 }
 
@@ -5956,8 +5956,7 @@ footer .btn {
 }
 
 .event_date_label{
-  margin-left: 3%;
-  margin-right: 1.4%;
+  margin: 0.9% 1.4% 0 3%;
 }
 
 .ticket_types_label{
@@ -5986,4 +5985,75 @@ footer .btn {
 
 .display_inline_block{
   display:inline-block
+}
+
+.create_ticket_types{
+  text-align:center;
+  width:70%;
+}
+
+.side_navbar{
+    display: inline-block;
+    width: 13.5%;
+    height: 100%;
+    float: left;
+    -webkit-box-shadow: 1px 5px 15px rgba(0,0,0,0.4);
+    background-color: #fff;
+}
+
+.text-center{
+  text-align: center !important;
+}
+
+.valign_top{
+  vertical-align: top !important;
+}
+
+.side_navbar a{
+    display:block;
+    text-decoration:none;
+}
+
+.side_navbar ul{
+    list-style-type: none;
+    text-decoration: none;
+    padding: 0px;
+}
+
+.side_navbar li{
+    padding-left: 11%;
+    min-height: 40px;
+    line-height:40px;
+    position:relative;
+    cursor:pointer;
+}
+
+.side_navbar li.active, .side_navbar li:hover{
+  background-color: #eee;
+}
+
+.side_navbar div{
+    width:100%;
+}
+
+#em_page_wrapper{
+    display: inline-block;
+    width: 85.7%;
+    height: 100%;
+    padding:10px;
+    background-color: #fff;
+    margin-left: 10px;
+}
+.event_name_container{
+    width:37%;
+    margin-bottom: 0.5%;
+}
+
+.ticket_types_container{
+  margin-bottom:1%;
+}
+
+.input_error{
+    font-size: 13px;
+    color: #bb1212;
 }

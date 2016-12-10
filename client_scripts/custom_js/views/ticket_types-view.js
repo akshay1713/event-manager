@@ -1,5 +1,4 @@
 const React = require("react");
-import Dropdown from 'react-dropdown';
 
 const FocusableInput = React.createClass({
     getInitialState:function(){
@@ -48,24 +47,24 @@ const TicketTypes = React.createClass({
         const total_ticket_types = this.props.total_ticket_types;
         for(let i = 1; i <= total_ticket_types; ++i){
             total_ticket_types_options.push(
-                <option value = {i.toString()} selected = {i === ticket_types_count}>{i}</option>
+                <option value = {i.toString()}>{i}</option>
             );
         }
         return(
             <div>
                 <div>
                 <label className="ticket_types_label">How many ticket types do you want for your event? Enter details below: </label>
-                    <select onChange = {this.renderCreateTickets}>
+                    <select onChange = {this.renderCreateTickets} defaultValue={ticket_types_count}>
                         {total_ticket_types_options}
                     </select>
                 </div>
                 <div className="table-responsive">
-                    <table id = "" className = "table create_ticket_types">
+                    <table className = "table create_ticket_types">
                         <thead className="text-primary">
                         <tr>
-                        <th>&nbsp;Name of ticket type&nbsp;</th>
-                        <th>&nbsp;Maximum tickets available&nbsp;</th>
-                        <th>&nbsp;Restrict single attendee to</th>
+                        <th className="text-center">Name of ticket type&nbsp;</th>
+                        <th className="text-center">Maximum tickets available&nbsp;</th>
+                        <th className="text-center">Restrict single attendee to</th>
                         </tr>
                         </thead>
                         <tbody>
