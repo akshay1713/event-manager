@@ -1,4 +1,6 @@
 const React = require("react");
+import Select from 'react-select';
+import Utils from '../utils'
 
 const FocusableInput = React.createClass({
     getInitialState:function(){
@@ -24,11 +26,19 @@ const FocusableInput = React.createClass({
 });
 
 const TicketTypes = React.createClass({
+    selectOptions:[],
+    componentDidMount:function(){
+        for(let i = 1; i <= this.props.total_ticket_types;++i){
+            this.selectOptions.push({value:i, label:Utils.numInWords(i)});
+        }
+        console.log("computed selectOptions ",this.selectOptions);
+    },
     getInitialState: function(){
         return {ticket_types_count: 1};
     },
-    renderCreateTickets: function(e){
-		const ticket_types_count = e.target.value;
+    renderCreateTickets: function(option){
+        console.log(option);
+		const ticket_types_count = option.value;
 		this.setState({
 			ticket_types_count: parseInt(ticket_types_count)
 		});
@@ -54,9 +64,12 @@ const TicketTypes = React.createClass({
             <div>
                 <div>
                 <label className="ticket_types_label">How many ticket types do you want for your event? Enter details below: </label>
-                    <select onChange = {this.renderCreateTickets} defaultValue={ticket_types_count}>
-                        {total_ticket_types_options}
-                    </select>
+                    <Select
+                        name="form-field-name"
+                        value={this.state.ticket_types_count}
+                        options={this.selectOptions}
+                        onChange={this.renderCreateTickets}
+                    />
                 </div>
                 <div className="table-responsive">
                     <table className = "table create_ticket_types">

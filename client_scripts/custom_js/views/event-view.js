@@ -5,6 +5,7 @@ const TicketTypes = require('./ticket_types-view.js');
 const DateTime = require("react-datetime");
 const moment = require('moment');
 import Ink from 'react-ink';
+import Select from 'react-select';
 
 
 const EventsContainer = React.createClass({
@@ -272,13 +273,13 @@ const EventsList = React.createClass({
 	render: function(){
 		const create_class_name = (this.props.showEventsList || !this.props.events) ? "" : "hidden";
 		return (
-			<div className={create_class_name+" card"}>
+			<div className={create_class_name+" card events_list_container"}>
 			<div className="card-header" data-background-color="purple">
 				<h4 className="title">Events</h4>
 				<p className="category">A list of all events created till now</p>
 	        </div>
 			<div className="card-content table-responsive">
-	        	<table className="table">
+	        	<table className="table events_list">
 				<thead className="text-primary">
 				<tr>
 				<th>Event Name</th>
@@ -296,8 +297,8 @@ const EventsList = React.createClass({
 	renderEvent: function(event){
 		return (
 			<tr>
-			<td onClick = {()=>this.props.expandEvent(event.id)}>{event.name}</td>
-			<td onClick = {()=>this.props.createEventForm(event.id)}> Create Registration Form</td>
+			<td onClick = {()=>this.props.expandEvent(event.id)} className="no_padding"><span className="name">{event.name}<Ink/></span></td>
+			<td onClick = {()=>this.props.createEventForm(event.id)} className="no_padding"><span className="create_form">Create Registration Form<Ink/></span></td>
 			</tr>
 		);
 	}
