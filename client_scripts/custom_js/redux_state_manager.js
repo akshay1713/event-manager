@@ -75,6 +75,7 @@ const current_events_reducer = (state = initialCurrentEventState, action) => {
 	else if (action.type === "CHANGE_TASK_STATUS"){
 		current_event_state.tasks.some((task) => {
 			if(task.id === action.task_details.taskid){
+				console.log("changing status to ",action.task_details.status);
 				task.status = action.task_details.status
 				return true;
 			}

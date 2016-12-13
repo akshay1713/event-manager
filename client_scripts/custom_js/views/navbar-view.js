@@ -48,11 +48,11 @@ const MainApp = React.createClass({
         <div className="side_navbar">
             <ul>
                 <li className = {this.isActive('team')} onClick = {this.setFilter.bind(this,'team')}>
-                    <a href="javascript:;">Team</a>
+                    <a href="javascript:;">TEAM</a>
                     <Ink/>
                 </li>
                 <li className = {this.isActive('events')} onClick = {this.setFilter.bind(this,'events')}>
-                    <a href="javascript:;">Events</a>
+                    <a href="javascript:;">EVENTS</a>
                     <Ink/>
                 </li>
             </ul>

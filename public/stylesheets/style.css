@@ -5342,7 +5342,9 @@ footer .btn {
 */
 .Select {
   position: relative;
-  width:69%;
+}
+.ticket_types_container .Select{
+  width: 69%;
 }
 .Select,
 .Select div,
@@ -5508,7 +5510,7 @@ footer .btn {
   color: #D0021B;
 }
 .Select-clear {
-  display: inline-block;
+  display: none;
   font-size: 18px;
   line-height: 1;
 }
@@ -5746,7 +5748,7 @@ footer .btn {
   display:inline-block
 }
 
-.create_ticket_types{
+.ticket_types_container .create_ticket_types{
   text-align:center;
   width:70%;
 }
@@ -5771,6 +5773,8 @@ footer .btn {
 .side_navbar a{
     display:block;
     text-decoration:none;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .side_navbar ul{
@@ -5828,13 +5832,53 @@ footer .btn {
 }
 
 .events_list span:hover{
-  background-color: #eee;
+    background-color: #eee;
 }
 
 .events_list_container .card-content{
-  height: 79%;
+    height: 79%;
 }
 
 .invite_user_btn{
+    position:relative;
+}
+
+.invite_user_container{
+    width: 25%;
+    text-align: center;
+    margin-top: 2%;
+}
+
+.add_tickets_container button{
+  position:relative;
+}
+
+.add_tickets_container{
+  text-align: center;
+}
+
+.event_tickets_container{
+  width: 46%;
+  margin-left: 4%;
+}
+
+.event_tasks_container, .event_tickets_container{
+  vertical-align: top;
+  display: inline-block;
+}
+
+.event_tasks_container{
+  width: 50%;
+}
+
+.create_task_container{
+  text-align: center;
+}
+
+.create_task_container > div{
+  margin: 0 14%;
+}
+
+.create_task_container > button{
   position:relative;
 }

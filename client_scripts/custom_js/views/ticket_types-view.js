@@ -1,29 +1,7 @@
 const React = require("react");
 import Select from 'react-select';
 import Utils from '../utils'
-
-const FocusableInput = React.createClass({
-    getInitialState:function(){
-        return {focused_class:""}
-    },
-    setFocusedState: function(){
-        this.setState({focused_class:"is-focused"});
-    },
-    removeFocusedState: function(){
-        this.setState({focused_class:""});
-    },
-    render:function(){
-        const label = (this.props.label_text) ? <label className="control-label">{this.props.label_text}</label> : null;
-        return(
-            <div className = {this.state.focused_class + " form-group label-floating is-empty"} 
-            onClick = {this.setFocusedState} onBlur = {this.removeFocusedState}>
-                {label}
-                <input type = "text" className={this.props.input_class+ " form-control"}></input>
-                <span className="material-input"></span>
-            </div>
-        );
-    }
-});
+import FocusableInput from './custom_components'
 
 const TicketTypes = React.createClass({
     selectOptions:[],
@@ -48,9 +26,9 @@ const TicketTypes = React.createClass({
         let ticket_types_rows = [];
         for (let i = 1; i <= ticket_types_count; ++i){
             ticket_types_rows.push(<tr>
-            <td><FocusableInput input_class = "ticket_name"/></td>
-            <td><FocusableInput input_class = "maximum_available"/></td>
-            <td><FocusableInput input_class = "max_per_person"/></td>
+            <td><FocusableInput input_class = "ticket_name" is_controlled={false}/></td>
+            <td><FocusableInput input_class = "maximum_available" is_controlled={false}/></td>
+            <td><FocusableInput input_class = "max_per_person" is_controlled={false}/></td>
             </tr>);
         }
         let total_ticket_types_options = [];

@@ -31,7 +31,7 @@ router.post('/assign_task/:task_id',middleware.ensureAuthenticated, async functi
 });
 
 router.post('/change_task_status/:task_id',middleware.ensureAuthenticated, async function(ctx,next){
-    ctx.body = await EventsManager.changeTaskStatus(Utils.getUrlParams(ctx,'task_id'),Utils.getPostParams(ctx,'new_status'));
+    ctx.body = await EventsManager.changeTaskStatus(Utils.getUrlParams(ctx,'task_id'),Utils.getPostParams(ctx,'status'));
 });
 
 router.post('/create_form/:event_id',middleware.ensureAuthenticated, async function(ctx,next){

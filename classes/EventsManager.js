@@ -52,6 +52,7 @@ const EventsManager = {
     },
 
     changeTaskStatus: (taskid,status) => {
+        console.log("received taskid is ",taskid," status is ",status);
         return Tasks.changeTaskStatus(taskid,status);
     },
 

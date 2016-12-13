@@ -68,13 +68,40 @@ const EventForm = React.createClass({
         });
         return(
             <div>
-            {form_fields_existing}
+            <div className="card">
+				<div className="card-header" data-background-color="purple">
+					<h4 className = "title">Form Fields</h4>
+				</div>
+				<div className="card-content table-responsive">
+					<table className="table">
+						<thead>
+							<tr>
+								<th>Field Name</th>
+								<th>Maximum Available</th>
+								<th>Options</th>
+							</tr>
+						</thead>
+						<tbody>{this.props.fields.map(this.renderSavedFormField)}</tbody>
+					</table>
+				</div>
+			</div>
              <button onClick = {this.addField}>Add a new field</button>
                 {form_field_array}
             <button onClick = {this.saveNewField}>Save Form fields</button>
             </div>
             );
     },
+    renderSavedFormField: function(field){
+        console.log(field.options);
+        const options_string = (field.options && field.options.length>0) ? field.options.join(", ") : "-";
+        return(
+            <tr>
+                <td>{field.name}</td>
+                <td>{field.type}</td>
+                <td>{options_string}</td>
+            </tr>
+        );
+    }
 });
 
 const FormFieldExisting = React.createClass({
@@ -87,11 +114,13 @@ const FormFieldExisting = React.createClass({
             options_display = <label>Field options: {options_string}</label>
         }
         return(
+            {/*
             <div>
                 <label>Field name: <span>{field.name}</span></label>
                 <label>Field type: <span>{field.name}</span></label>
                 {options_display}
             </div>
+            */}
         );
     }
 });
@@ -106,17 +135,17 @@ const FormField = React.createClass({
             </div>
         );
     },
-    renderSavedFormField: function(field){
-        let options_string = "";
-        field.options.forEach((option) => {
-            options_string += `${option}, `;
-        });
-        return(
-            <div>
-            Name of field: {field.name} Type: {field.element_type} {options_string}
-            </div>
-        );
-    },
+    // renderSavedFormField: function(field){
+    //     let options_string = "";
+    //     field.options.forEach((option) => {
+    //         options_string += `${option}, `;
+    //     });
+    //     return(
+    //         <div>
+    //         Name of field: {field.name} Type: {field.element_type} {options_string}
+    //         </div>
+    //     );
+    // },
     updateUnsavedFieldType: function(e){
         let field = this.props.field;
         if(!field.options && e.target.value === "option"){

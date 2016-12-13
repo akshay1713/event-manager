@@ -4,6 +4,7 @@ const combinedStore = require('../redux_state_manager.js');
 import Validation from 'react-validation';
 import Select from 'react-select';
 import Ink from 'react-ink';
+import FocusableInput from './custom_components';
 
 const TeamContainer = React.createClass({
 	componentWillMount: function(){
@@ -45,7 +46,6 @@ const TeamContainer = React.createClass({
 		console.log("TeamContainer ",this.props);
 		return (
 			<div>
-			<h1>Team Page </h1>
 			<InviteTeamMember  inviteUserFunc = {this.inviteUser}></InviteTeamMember>
 			<TeamMembers team_members = {this.props.user_state.users}/>
 			</div>
@@ -60,6 +60,7 @@ const InviteTeamMember = React.createClass({
 	},
 	updateInviteEmail: function(e){
 		const email = e.target.value;
+		console.log(email);
 		if(!utils.is_email(email)){
 			this.setState({
 				email_error_element:"", invite_email:""
@@ -81,19 +82,23 @@ const InviteTeamMember = React.createClass({
 			setTimeout(this.clearWarnings, 5000);
 			return;
 		}
+		this.setState({email_error_element:"hidden", invite_email:""});
 		this.props.inviteUserFunc(this.state.invite_email);
 	},
 	render: function(){
 		return (
-			<div>
-				<div>
-					<input type = "text" id = "invite_email" value = {this.props.invite_email} onBlur = {this.updateInviteEmail}></input><br/>
-					<span className={this.state.email_error_element + " input_error"}>Invalid email</span>
-				</div>
-				<div><button className="invite_user_btn" 
+			<center>
+			<div className="invite_user_container">
+				<div><button className="invite_user_btn btn btn-primary" 
 				onClick = {this.validateAndInviteUser}>
 					Click here to invite user<Ink/></button></div>
+				<div>
+					<FocusableInput input_class="invite_user" value = {this.state.invite_email} 
+					onBlur = {this.updateInviteEmail} is_controlled = {true} placeholder="Email"/>
+					<span className={this.state.email_error_element + " input_error"}>Invalid email</span>
+				</div>
 			</div>
+			</center>
 		);
 	}
 });
@@ -101,16 +106,13 @@ const InviteTeamMember = React.createClass({
 const TeamMembers = React.createClass({
 	componentWillMount: function(){
 	},
-
 	componentDidMount:function(){
 	},
-
 	render: function(){
-		console.log(this.props," fuck");
 		return(
 		<div>
 			<div className="card">
-			<div className="card-header">
+			<div className="card-header" data-background-color="purple">
 				<h4 className = "title">Team Members</h4>
 			</div>
 			<div className="card-content table-responsive">
