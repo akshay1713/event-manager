@@ -18,8 +18,7 @@ router.get('/:id',middleware.ensureAuthenticated, async function (ctx,next){
 });
 
 router.post('/add_ticket/:id', middleware.ensureAuthenticated, async function(ctx,next){
-    ctx.body = await EventsManager.createTicket(Utils.getPostParams(ctx, 'ticket_name'), 
-    Utils.getPostParams(ctx, 'maximum_available'), Utils.getPostParams(ctx, 'max_per_person'), Utils.getUrlParams(ctx, 'id'));
+    ctx.body = await EventsManager.createTickets(Utils.getPostParams(ctx, 'ticket_types'), Utils.getUrlParams(ctx, 'id'));
 });
 
 router.post('/create_task/:id',middleware.ensureAuthenticated, async function(ctx,next){
@@ -51,6 +50,14 @@ router.post('/add_form_fields/:event_id', middleware.ensureAuthenticated, async 
 router.post('/get_form_elements/:event_id', middleware.ensureAuthenticated, async function(ctx, next){
     const res = await EventsManager.getEventFormElements(Utils.getUrlParams(ctx, 'event_id'));
     ctx.body = res;
+});
+
+router.post('/publish_event/:event_id', middleware.ensureAuthenticated, async function(ctx, next){
+    ctx.body = await EventsManager.publishEvent(Utils.getUrlParams(ctx, 'event_id'));
+});
+
+router.post('/unpublish_event/:event_id', middleware.ensureAuthenticated, async function(ctx, next){
+    ctx.body = await EventsManager.unpublishEvent(Utils.getUrlParams(ctx, 'event_id'));
 });
 
 router.all('/submit_form', middleware.ensureAuthenticated, async function(ctx,next){

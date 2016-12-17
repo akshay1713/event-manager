@@ -10,6 +10,10 @@ const session_store_db = process.env.SESSION_STORE_DB || 'sessions';
 const session_store_password = process.env.SESSION_STORE_PASSWORD || 'kri';
 const session_store_port = process.env.SESSION_STORE_PORT || 3307
 const mongodb_uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/event_attendees'
+
+const emailer_sender = process.env.em_sender;
+const emailer_password = process.env.em_password;
+
 const config = {
 	db: {
 		username: db_username,
@@ -30,6 +34,11 @@ const config = {
 
 	mongodb_config: {
 		db_url: mongodb_uri
+	},
+
+	emailer:{
+		sender:emailer_sender,
+		password:emailer_password
 	}
 };
 

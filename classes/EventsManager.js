@@ -116,6 +116,14 @@ const EventsManager = {
         // });
         // console.log("after pushing all");
         // return form_elements_with_options;
+    },
+
+    publishEvent: (event_id) => {
+        return Events.publishEvent(event_id);
+    },
+
+    unpublishEvent: (event_id) => {
+        return Events.unpublishEvent(event_id);
     }
     
 }

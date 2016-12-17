@@ -5882,3 +5882,47 @@ footer .btn {
 .create_task_container > button{
   position:relative;
 }
+
+.new_field_container{
+  padding-top: 2%;
+}
+
+.field_name_container{
+  width: 30%;
+  display: inline-block;
+  margin: 0px;
+  vertical-align: top;
+}
+
+.new_field_container > .Select{
+  width: 30%;
+  display: inline-block;
+  margin-left: 2%;
+  vertical-align: top;
+}
+
+.new_field_container .close_new_field{
+    float: right;
+    margin-right: 2%;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 0.5%;
+}
+
+.field_options_container{
+  width:30%;
+  display: inline-block;
+  margin-left: 2%;
+}
+
+.form_elements_container{
+  position: relative;
+}
+
+.save_field_btns_container button{
+  width:15%;
+}
+
+.save_field_btns_container button:nth-child(2){
+  margin-left: 2%;
+}

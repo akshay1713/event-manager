@@ -25,7 +25,7 @@ const TicketTypes = React.createClass({
         const ticket_types_count = this.state.ticket_types_count;
         let ticket_types_rows = [];
         for (let i = 1; i <= ticket_types_count; ++i){
-            ticket_types_rows.push(<tr>
+            ticket_types_rows.push(<tr key={i}>
             <td><FocusableInput input_class = "ticket_name" is_controlled={false}/></td>
             <td><FocusableInput input_class = "maximum_available" is_controlled={false}/></td>
             <td><FocusableInput input_class = "max_per_person" is_controlled={false}/></td>

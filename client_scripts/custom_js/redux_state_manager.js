@@ -51,6 +51,13 @@ const events_reducer = (state = initialEventState,action) => {
 	else if (action.type === "REFRESH_EVENTS"){
 		events_state.events = action.events;
 	}
+	else if (action.type === "EVENT_STATUS_CHANGED"){
+		events_state.events.some((event) => {
+			if(event.id === action.event_id){
+				event.status = action.new_status;
+			}
+		});	
+	}
 	return events_state;
 };
 

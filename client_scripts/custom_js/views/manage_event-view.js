@@ -25,17 +25,36 @@ const ManageEventContainer = React.createClass({
 		});
     },
 	createTicket: function(event_id){
-		const ticket_name = document.getElementById("ticket_name").value;
-		const maximum_available = document.getElementById("maximum_available").value;
-		const max_per_person = document.getElementById("max_per_person").value;
+		let ticket_types = [];
+		const ticket_types_rows = document.querySelectorAll(".create_ticket_types tbody tr");
+		ticket_types_rows.forEach((row) => {
+			let ticket_type = {};
+			ticket_type.name = row.querySelector(".ticket_name").value;
+			ticket_type.maximum_available = row.querySelector(".max_per_person").value;
+			ticket_type.max_per_person = row.querySelector(".max_per_person").value;
+			if(!ticket_type.name || !ticket_type.maximum_available || !ticket_type.max_per_person){
+				state.form_error_elements.ticket_types = "";
+				is_invalid = true;
+			}
+			ticket_type.eventid = event_id;
+			ticket_types.push(ticket_type);
+		});;
 		utils.ajax({
 			url:"/events/add_ticket/"+event_id,
 			method:"POST",
-			data:{ticket_name, maximum_available, max_per_person},
+			data:{ticket_types},
 			callback:(response) => {
+				let created_ticket_types = [];
+				ticket_types.forEach((type) => {
+					created_ticket_types.push({
+						ticket_name:type.ticket_name, 
+						maximum_available:type.maximum_available,
+						booked:0
+					});
+				});
 				combinedStore.dispatch({
 					type:"CREATE_TICKET",
-					tickets:[{name:ticket_name, maximum_available, booked: 0}]
+					tickets:created_ticket_types
 				});
 			}
 		});
@@ -67,7 +86,6 @@ const ManageEventContainer = React.createClass({
 		});
 	},
 	changeTaskStatus:function(taskid, status){
-		console.log("requested change is ", status);
 		utils.ajax({
 			url:"/events/change_task_status/"+taskid,
 			method:"POST",
@@ -141,7 +159,7 @@ const Tickets = React.createClass({
 	},
 	renderTicket: function(ticket){
 		return (
-			<tr>
+			<tr key={ticket.id}>
 				<td>{ticket.name}</td>
 				<td>{ticket.maximum_available}</td>
 				<td>{ticket.booked}</td>
@@ -156,7 +174,9 @@ const SelectedEventTasks = React.createClass({
 	},
 	componentDidMount: function(){
 	},
-	componentWillReceiveProps:function(next_props){
+	componentWillReceiveProps:function(){
+		// console.log("update nahi hua");
+		this.setState({task_name:""});
 	},
 	updateTaskName:function(e){
 		this.setState({task_name:e.target.value});
@@ -168,6 +188,7 @@ const SelectedEventTasks = React.createClass({
 		this.setState({task_name:""});
 	},
 	render: function(){
+		// console.log("task name should be ",this.state.task_name);
 		return (
 			<div className="event_tasks_container">
 			<div className="card">
@@ -188,7 +209,7 @@ const SelectedEventTasks = React.createClass({
 				</div>
 			</div>
 			<div className="create_task_container">
-				<FocusableInput input_class="create_task" value = {this.state.task_name} 
+				<FocusableInput input_class="create_task" value = {this.state.task_name} value={this.state.task_name}
 					onBlur = {this.updateTaskName} is_controlled = {true} placeholder="Task name"/>
 			<div><button onClick = {this.getTaskNameAndCreate} className="btn btn-primary">
 			Create a new task</button></div>
@@ -209,7 +230,7 @@ const SelectedEventTasks = React.createClass({
 		const status = (task.status === "pending") ? "pending" : "done";
 		const status_options = [{label:"Done", value:"done"}, {label:"Pending", value:"pending"}];
 		return (
-			<tr>
+			<tr key={task.id}>
 			<td>
 				{task.name} 
 			</td>
@@ -226,7 +247,7 @@ const SelectedEventTasks = React.createClass({
 					name="change_status_dropdown"
 					value={status}
 					options={status_options}
-					onChange={(option) => {console.log("option is ", option);this.props.changeTaskStatus(task.id, option.value)}}
+					onChange={(option) => {this.props.changeTaskStatus(task.id, option.value)}}
 				/>
 			</td>
 			</tr>

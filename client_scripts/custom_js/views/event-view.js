@@ -12,8 +12,6 @@ const EventsContainer = React.createClass({
 	componentWillMount: function(){
 	},
 	componentWillReceiveProps: function(next_props){
-		console.log("received next props ",next_props);
-		this.setState({createEventForm:true,createEventHidden:true});
 	},
 	getInitialState: function(){
 		return {
@@ -65,14 +63,38 @@ const EventsContainer = React.createClass({
 	createEventForm: function(event_id){
 		utils.navigateTo(`/create_form/event_id/${event_id}`)
 	},
+	publishEvent:function(event_id){
+		utils.ajax({
+			url:`/events/publish_event/${event_id}`,
+			callback: (response) =>{
+				combinedStore.dispatch({
+					type:"EVENT_STATUS_CHANGED",
+					event_id,
+					new_status:"published"
+				});
+			}
+		});
+	},
+	unpublishEvent:function(event_id){
+		utils.ajax({
+			url:`/events/unpublish_event/${event_id}`,
+			callback: (response) =>{
+				combinedStore.dispatch({
+					type:"EVENT_STATUS_CHANGED",
+					event_id,
+					new_status:"unpublished"
+				});
+			}
+		});
+	},
 	render: function(){
-		console.log("event props are ",this.props," event state is ",this.state);
 		return (
 			<div>		
 			<CreateEvent  createEvent = {this.createEvent} toggleCreateEvent = {this.toggleCreateEvent} 
 			createEventHidden = {this.state.createEventHidden}></CreateEvent>
 			<EventsList events = {this.props.events_state.events} expandEvent = {this.expandEvent}
-			createEventForm = {this.createEventForm} showEventsList = {this.state.createEventHidden}/>
+			createEventForm = {this.createEventForm} showEventsList = {this.state.createEventHidden}
+			publishEvent = {this.publishEvent} unpublishEvent = {this.unpublishEvent}/>
 			</div>
 		);
 	},
@@ -284,6 +306,7 @@ const EventsList = React.createClass({
 				<tr>
 				<th>Event Name</th>
 				<th>Registration Form</th>
+				<th>Event Status</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -295,10 +318,16 @@ const EventsList = React.createClass({
 		);
 	},
 	renderEvent: function(event){
+		console.log(event);
+		if(event.status === 'unpublished');
+		const status_field = (event.status === 'unpublished') ? <td onClick = {()=>{this.props.publishEvent(event.id)}}>
+		<span className="publish_event">Publish Event<Ink/></span></td> 
+		: <td onClick = {()=>{this.props.unpublishEvent(event.id)}}><span className="unpublish_event">Unpublish Event<Ink/></span></td>;
 		return (
-			<tr>
+			<tr key = {event.id}>
 			<td onClick = {()=>this.props.expandEvent(event.id)} className="no_padding"><span className="name">{event.name}<Ink/></span></td>
-			<td onClick = {()=>this.props.createEventForm(event.id)} className="no_padding"><span className="create_form">Create Registration Form<Ink/></span></td>
+			<td onClick = {()=>this.props.createEventForm(event.id)} className="no_padding"><span className="create_form">Modify Registration Form<Ink/></span></td>
+			{status_field}
 			</tr>
 		);
 	}

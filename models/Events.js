@@ -11,7 +11,7 @@ const Events = {
 
     getAllEvents: (teamid) => {
         return knex(table)
-        .select('id','name','form_created')
+        .select('id','name','form_created','status')
         .where({teamid});
     },
 
@@ -25,6 +25,18 @@ const Events = {
         return knex(table)
         .select('name','id')
         .where({'id':eventid})
+    },
+
+    publishEvent:(eventid) => {
+        return knex(table)
+        .where({'id':eventid})
+        .update({'status':'published'});
+    },
+
+    unpublishEvent:(eventid) => {
+        return knex(table)
+        .where({'id':eventid})
+        .update({'status':'unpublished'});
     }
 };
 

@@ -10,6 +10,9 @@ const utils = {
 	ajax: (ajax_params) => {
 		const url = config.domain + ajax_params.url;
 		const method = ajax_params.method ? ajax_params.method : "POST";
+		if(!ajax_params.data){
+			ajax_params.data = {};
+		}
 		$.ajax({
 			url:ajax_params.url,
 			data:ajax_params.data,

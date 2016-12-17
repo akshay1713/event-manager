@@ -1,6 +1,10 @@
 const React = require('react');
 const utils = require('../utils.js');
 const combinedStore = require('../redux_state_manager.js');
+import FocusableInput from './custom_components';
+import Select from 'react-select';
+import Utils from '../utils';
+import Ink from 'react-ink';
 
 const EventForm = React.createClass({
     getInitialState:function(){
@@ -8,6 +12,9 @@ const EventForm = React.createClass({
             unsaved_fields:[],
             deleted_fields:[]
         }
+    },
+    componentWillReceiveProps: function(next_props){
+        this.setState({unsaved_fields:[], deleted_fields:[]});
     },
     componentDidMount: function(){
         const event_id = utils.getUrlParameter("event_id");
@@ -19,10 +26,6 @@ const EventForm = React.createClass({
                 combinedStore.dispatch({
                     type:"UPDATE_FORM_FIELDS",
                     fields:response
-                });
-                this.setState({
-                    unsaved_fields:[],
-                    deleted_fields:[]
                 });
             }
         });
@@ -47,7 +50,7 @@ const EventForm = React.createClass({
     },
     addField: function(e){
         let state = this.state;
-        const new_field = {element_type:"text"}
+        const new_field = {element_type:"text", name:Utils.numInWords(state.unsaved_fields.length)};
         state.unsaved_fields.push(new_field);
         state.fields_count++;
         this.setState(state);
@@ -57,17 +60,31 @@ const EventForm = React.createClass({
         state.unsaved_fields[index] = field_data;
         this.setState(state);
     },
+    clearUnsavedFields: function(){
+        this.setState({unsaved_fields:[], deleted_fields:[]});
+    },
+    removeUnsaveField: function(index){
+        let unsaved_fields = this.state.unsaved_fields;
+        unsaved_fields.splice(index,1);
+        let state = this.state;
+        state.unsaved_fields = unsaved_fields;
+        this.setState(state);
+
+        // this.setState(Utils.updateReactState(this.state, {unsaved_fields}));
+    },
     render:function(){
         let form_field_array = [];
         this.state.unsaved_fields.forEach((field, index) => {
-            form_field_array.push(<FormField field = {field} index = {index} updateUnsavedField = {this.updateUnsavedField}/>);
+            form_field_array.push(<FormField field = {field} index = {index} key = {index}
+            updateUnsavedField = {this.updateUnsavedField} removeUnsaveField = {this.removeUnsaveField}/>);
         });
         let form_fields_existing = [];
         this.props.fields.forEach((field) => {
             form_fields_existing.push(<FormFieldExisting field={field}/>);
         });
+        const new_field_btns_class = (this.state.unsaved_fields.length > 0) ? "" : "hidden";
         return(
-            <div>
+            <div className = "form_elements_container">
             <div className="card">
 				<div className="card-header" data-background-color="purple">
 					<h4 className = "title">Form Fields</h4>
@@ -77,7 +94,7 @@ const EventForm = React.createClass({
 						<thead>
 							<tr>
 								<th>Field Name</th>
-								<th>Maximum Available</th>
+								<th>Type</th>
 								<th>Options</th>
 							</tr>
 						</thead>
@@ -85,19 +102,23 @@ const EventForm = React.createClass({
 					</table>
 				</div>
 			</div>
-             <button onClick = {this.addField}>Add a new field</button>
+            <div className = "text-center">
+                <button onClick = {this.addField} className="btn btn-primary">ADD A NEW FIELD<Ink/></button>
+            </div>
                 {form_field_array}
-            <button onClick = {this.saveNewField}>Save Form fields</button>
+                <div className = "save_field_btns_container text-center">
+                    <button onClick = {this.saveNewField} className={"btn btn-primary " + new_field_btns_class}>SAVE FORM FIELDS<Ink/></button>
+                    <button onClick = {this.saveNewField} className={"btn btn-primary " + new_field_btns_class}>NOT NOW<Ink/></button>
+                </div>
             </div>
             );
     },
     renderSavedFormField: function(field){
-        console.log(field.options);
         const options_string = (field.options && field.options.length>0) ? field.options.join(", ") : "-";
         return(
-            <tr>
+            <tr key = {Math.random()}>
                 <td>{field.name}</td>
-                <td>{field.type}</td>
+                <td>{field.element_type}</td>
                 <td>{options_string}</td>
             </tr>
         );
@@ -135,23 +156,12 @@ const FormField = React.createClass({
             </div>
         );
     },
-    // renderSavedFormField: function(field){
-    //     let options_string = "";
-    //     field.options.forEach((option) => {
-    //         options_string += `${option}, `;
-    //     });
-    //     return(
-    //         <div>
-    //         Name of field: {field.name} Type: {field.element_type} {options_string}
-    //         </div>
-    //     );
-    // },
-    updateUnsavedFieldType: function(e){
+    updateUnsavedFieldType: function(option){
         let field = this.props.field;
-        if(!field.options && e.target.value === "option"){
+        if(!field.options && option.value === "option"){
             field.options = ["",""];
         }
-        field.element_type = e.target.value
+        field.element_type = option.value
         this.props.updateUnsavedField(field, this.props.index);
     },
     updateUnsavedFieldName: function(e){
@@ -159,15 +169,17 @@ const FormField = React.createClass({
         field.name = e.target.value
         this.props.updateUnsavedField(field, this.props.index);
     },
-    updateFieldOptions: function(e, i){
+    updateFieldOptions: function(option_value, i){
         let field = this.props.field;
-        field.options[i] = e.target.value;
+        let new_options = field.options;
+        new_options[i] = option_value;
+        field.options = new_options;
         this.props.updateUnsavedField(field, this.props.index);
     },
-    updateOptionsCount: function(e){
+    updateOptionsCount: function(option){
         let field = this.props.field;
         let options_count = field.options.length
-        let new_count = e.target.value;
+        let new_count = option.value;
         if(new_count > options_count){
             for(let i = options_count; i < new_count; i++){
                 field.options.push("");
@@ -178,36 +190,42 @@ const FormField = React.createClass({
         }
         this.props.updateUnsavedField(field, this.props.index);
     },
+    clearCurrentField:function(){
+        this.props.removeUnsaveField(this.props.index);
+    },
     renderUnsavedFormField: function(field){
+        const field_type_options = [{label:"Text", value:"text"}, {label:"Option", value:"option"}];
         return(
-            <div>
-                Enter field name: <input type = "text" onBlur = {this.updateUnsavedFieldName}/>
-                <select onChange = {this.updateUnsavedFieldType}>
-                    <option value = "text" selected = {field.element_type !== "option"}>Text</option>
-                    <option value = "option" selected = {field.element_type === "option"}>Option</option>
-                </select>
-                {this.renderOptions(field)}
+            <div className="new_field_container">
+                <FocusableInput onBlur = {this.updateUnsavedFieldName} value = {field.name}
+                placeholder="Field Name" className="field_name_container" is_controlled = {true}/>
+                <Select name="field_type" value={field.element_type} options={field_type_options} 
+                onChange={this.updateUnsavedFieldType}></Select>
+                {this.renderOptions(field, 6)}
+                <div className = "close_new_field" onClick={this.clearCurrentField}>&times;</div>
             </div>
         );
     },
-    renderOptions: function(field){
+    renderOptions: function(field, max_options){
         if(field.element_type === "text" || !field.options){
             return null;
         }
         let options_array = [];
         field.options.forEach((option, index) => {
-            options_array.push(<input type = "text" onBlur = {(e) => {this.updateFieldOptions(e, index);}}/>);
+            options_array.push(
+                <FocusableInput onBlur = {(e) => {this.updateFieldOptions(e.target.value, index);}} 
+                className = "field_option_name" placeholder={"Option "+ Utils.numInWords(index + 1)}/>
+            );
         });
-        let options_count_dropdown = [];
-        for(let i = 2; i < 6; i++){
-            options_count_dropdown.push(<option value = {i}>{i}</option>);
+        let options_count=[];
+        for(let i = 2; i <= max_options;++i){
+            options_count.push({value:i, label:Utils.numInWords(i)});
         }
         return (
-            <div>
+            <div className="field_options_container">
+                <Select name = "field_options_count" options={options_count} value={options_array.count} 
+                onChange={this.updateOptionsCount}></Select> 
                 {options_array}
-                <select defaultValue = {options_array.length} onChange = {this.updateOptionsCount}>
-                    {options_count_dropdown}
-                </select>
             </div>
             );
     }
