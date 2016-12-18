@@ -1,10 +1,13 @@
 const webpack = require('webpack');
 
 module.exports = {
-    entry: "./client_scripts/custom_js/initialize.js",
+    entry: {
+        loggedin:"./client_scripts/custom_js/initialize.js",
+        attendee:"./client_scripts/custom_js/attendee.js"
+    },
     output: {
         path: "./public/js",
-        filename: "combined.js"
+        filename: "[name]_combined.js"
     },
     module: {
         loaders: [{

@@ -2,7 +2,6 @@ import React from 'react';
 
 const FocusableInput = React.createClass({
     componentDidMount:function(){
-        console.log("componentDidMount of FocusableInput");
     },
     getInitialState:function(){
         return {focused_class:""}
@@ -36,14 +35,12 @@ const InputField = React.createClass({
     },
     updateValueAndCallHandler: function(e){
         const value = e.target.value;
-        // console.log("updating state of InputField");
         this.setState({text_value:value});
         if(typeof this.props.onChangeFunc === "function"){
             this.props.onChangeFunc(e);
         }
     },
     render: function(){
-        // console.log(`InputField props ${JSON.stringify(this.props)}`);
         const onChangeFunc = (this.props.onChange) ? this.props.onChange : null;
         const onBlurFunc = (this.props.onBlur) ? this.props.onBlur : null;
         const label = (this.props.label_text) ? <label className="control-label">{this.props.label_text}</label> : null;

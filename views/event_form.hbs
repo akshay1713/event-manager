@@ -1,19 +1,34 @@
-<h1>{{name}}</h1>
-<form action="/events/submit_form" method="post">
-    <div>
-        <label for="firstname">First Name:</label>
-        <input type="text" id="firstname" name="firstname" />
-    </div>
-    <div>
-        <label for="lastname">Last Name:</label>
-        <input type="text" id="lastname" name="lastname" />
-    </div>
-    <div>
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" />
-    </div>
-    <input type="hidden" id="id" name="id" value={{id}}/>
-    <div class="button">
-        <button type="submit">Register for Event</button>
-    </div>
-</form>
+<body style="background-color: #fff;">
+<div id = "registration_form_container"></div>
+</body>
+<script>
+    let event_form_elements = [], options = [];
+    {{#each event_form_elements_obj}}
+        options = [];
+        {{#each options}}
+            options.push("{{this}}");
+        {{/each}}
+        event_form_elements.push({
+            id:"{{id}}",
+            name:"{{name}}",
+            element_type:"{{element_type}}",
+            options
+        });
+    {{/each}}
+    window.__event_form_elements__ = event_form_elements;
+    let ticket_types = [];
+    {{#each ticket_types}}
+        ticket_types.push({
+            id:parseInt("{{id}}"),
+            name:"{{name}}",
+            maximum_available:parseInt("{{maximum_available}}"),
+            max_per_person:parseInt("{{max_per_person}}"),
+            booked:parseInt("{{booked}}")
+        });
+    {{/each}}
+    window.__ticket_types__ = ticket_types;
+    window.__event_id__ = {{event_id}};
+</script>
+<script type = "text/javascript" src = "/js/attendee_combined.js"></script>
+<link href="/stylesheets/bootstrap.css" rel="stylesheet">
+<link href="/stylesheets/style.css" rel="stylesheet">

@@ -37,10 +37,12 @@ router.post('/create_form/:event_id',middleware.ensureAuthenticated, async funct
     ctx.body = await EventsManager.createEventForm(Utils.getUrlParams(ctx,'event_id'));
 });
 
-router.get('/event_form/:id', middleware.ensureAuthenticated, async function(ctx,next){
-    const event_data = await EventsManager.getFormData(Utils.getUrlParams(ctx,'id'));
-    console.log(event_data);
-    await ctx.render('event_form',event_data[0]);
+router.get('/event_form/:event_id', async function(ctx,next){
+    const eventid = Utils.getUrlParams(ctx, 'event_id');
+    // const event_form_elements_obj = await EventsManager.getEventFormElements(eventid);
+    // const ticket_types = await EventsManager.getAllTickets(eventid);
+    const registration_data =  await EventsManager.getRegistrationFormData(eventid);
+    await ctx.render('event_form', registration_data);
 });
 
 router.post('/add_form_fields/:event_id', middleware.ensureAuthenticated, async function(ctx, next){
@@ -60,14 +62,12 @@ router.post('/unpublish_event/:event_id', middleware.ensureAuthenticated, async 
     ctx.body = await EventsManager.unpublishEvent(Utils.getUrlParams(ctx, 'event_id'));
 });
 
-router.all('/submit_form', middleware.ensureAuthenticated, async function(ctx,next){
-    const attendee_data = {
-        email:Utils.getPostParams(ctx,'email'),
-        firstname:Utils.getPostParams(ctx,'firstname'),
-        lastname:Utils.getPostParams(ctx,'lastname'),
-        eventid:1
-    };
-    ctx.body = await EventsManager.registerNewAttendee(attendee_data);
+router.post('/submit_form/:event_id', async function(ctx,next){
+    console.log(ctx.request.body);
+    const res = await EventsManager.registerNewAttendee(Utils.getUrlParams(ctx,'event_id'),Utils.getPostParams(ctx, 'form_fields'),
+    Utils.getPostParams(ctx, 'ticketid'), Utils.getPostParams(ctx, 'quantity'));
+    console.log(`result is ${res}`);
+    ctx.body = res;
 });
 
 module.exports = router;

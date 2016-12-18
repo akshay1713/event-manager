@@ -5926,3 +5926,78 @@ footer .btn {
 .save_field_btns_container button:nth-child(2){
   margin-left: 2%;
 }
+
+/*********ATTENDEE FORM REGISTRATION CSS****************/
+
+#registration_form_container{
+  background-color: #eee;
+  width: 60%;
+  margin:0 20%;
+}
+
+.registration_form{
+  padding: 3% 6%;
+}
+
+.registration_form .form-group{
+  margin:0;
+  width: 79%;
+  display:inline-block;
+}
+
+.form_element_option{
+  margin-right: 3%;
+  color: #3C4858;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif
+}
+
+.registration_form .element_label{
+  display: inline-block;
+  width: 18%;
+  font-weight: 400;
+}
+.registration_form{
+  font-weight: 400;
+}
+
+.registration_form > div{
+  margin-top: 2%;
+}
+
+.register-btn{
+  position: relative;
+}
+
+.ticket_quantity_container{
+  width: 52%;
+  margin-left: 5%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.ticket_type_container{
+  width: 25%;
+  display: inline-block;
+}
+
+.ticket_quantity_container > div{
+  display: inline-block;
+  width: 30%;
+  vertical-align: middle;
+}
+
+.ticket_quantity_container .Select{
+  display: inline-block;
+  width: 23%;
+  cursor: pointer;
+}
+
+.ticket_type_container .Select{
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.element_label.valign_top{
+  margin-top: 1%;
+}

@@ -15,7 +15,6 @@ const TicketTypes = React.createClass({
         return {ticket_types_count: 1};
     },
     renderCreateTickets: function(option){
-        console.log(option);
 		const ticket_types_count = option.value;
 		this.setState({
 			ticket_types_count: parseInt(ticket_types_count)

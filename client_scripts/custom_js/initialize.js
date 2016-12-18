@@ -1,6 +1,4 @@
-if (module.hot) {
-  module.hot.accept();
-}
+
 const ReactDOM = require('react-dom');
 const React = require('react');
 const combinedStore = require('./redux_state_manager.js');

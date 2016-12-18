@@ -37,6 +37,12 @@ const Events = {
         return knex(table)
         .where({'id':eventid})
         .update({'status':'unpublished'});
+    },
+
+    getName:(eventid) => {
+        return knex(table)
+        .select('name')
+        .where({'id':eventid});
     }
 };
 

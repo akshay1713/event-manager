@@ -3,16 +3,24 @@ const webpack = require('webpack');
 
 module.exports = {
     devtool: 'eval',
-    entry: [
-        'react-hot-loader/patch',
-        'webpack-dev-server/client?http://localhost:3000',
-        'webpack/hot/only-dev-server',
-        './client_scripts/custom_js/initialize'
-    ],
+    entry: {
+        loggedin: [
+            'react-hot-loader/patch',
+            'webpack-dev-server/client?http://localhost:3000',
+            'webpack/hot/only-dev-server',
+            './client_scripts/custom_js/initialize'
+        ],
+        attendee:[            
+            'react-hot-loader/patch',
+            'webpack-dev-server/client?http://localhost:3000',
+            'webpack/hot/only-dev-server',
+            "./client_scripts/custom_js/attendee.js"
+        ]
+    },
     output: {
         path: "/Users/akshaysingh/personal/event_manager/public/js",
-        filename: 'combined.js',
-        publicPath: '/'
+        filename: '[name]_combined.js',
+        publicPath: '/js/'
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin()

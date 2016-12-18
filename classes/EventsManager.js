@@ -12,7 +12,6 @@ const EventsManager = {
     },
 
     createEvent: async function(name, ticket_types, teamid, event_start, event_end, venue, organizer_email){
-        console.log("in createEvent ",event_start, event_end, venue);
 		const eventid_array = await Events.createNew(name, teamid, event_start, event_end, venue);
         ticket_types.forEach((ticket_type) => {ticket_type.eventid = eventid_array[0]});
         const email_data = {
@@ -52,7 +51,6 @@ const EventsManager = {
     },
 
     changeTaskStatus: (taskid,status) => {
-        console.log("received taskid is ",taskid," status is ",status);
         return Tasks.changeTaskStatus(taskid,status);
     },
 
@@ -60,18 +58,30 @@ const EventsManager = {
         return Events.createEventForm(eventid);
     },
 
-    getFormData: (eventid) => {
+    getFormData: async (eventid) => {
+        const form_elements = EventFormElements.getFormElements(eventid);
         return Events.getFormData(eventid);
     },
 
-    registerNewAttendee: async (attendee_data) => {
-        console.log("EventAttendees object is ",EventAttendees );
-        return await new EventAttendees(attendee_data).save();
+    registerNewAttendee: async (eventid, form_fields, ticketid, quantity) => {
+        const mandatory_fields = ['email', 'firstname', 'lastname'];
+        let attendee_data = {ticketid, eventid, quantity}, extra_data = {};
+        Object.keys(form_fields).forEach((field) => {
+            if(mandatory_fields.indexOf(field) !== -1){
+                attendee_data[field] = form_fields[field];
+            }
+            else{
+                extra_data[field] = form_fields[field];
+            }
+        });
+        attendee_data.extra_data = extra_data;
+        console.log("saving data ",attendee_data);
+        let attendee_status =  await new EventAttendees(attendee_data).save();
+        let ticket_status = await Tickets.updateTicketCount(ticketid, quantity);
+        return attendee_data && attendee_status;
     },
 
     addRegistrationFormFields: async (event_id, form_fields) => {
-        console.log(`params are ${event_id} and ${form_fields}`);
-
         const form_element_ids = [];
         await form_fields.forEach(async (field) => {
             let form_element_id = await EventFormElements.createNew({
@@ -105,17 +115,6 @@ const EventsManager = {
             }
         }
         return form_elements;
-        // form_elements.forEach(async (form_element, index) => {
-        //     let form_element_with_options = form_element
-        //     if(form_element.element_type !== 'text'){
-        //         form_element_with_options.options = await EventFormElementOptions.getFormElementOptions(form_element.id);
-        //     }
-        //     form_elements_with_options.push(form_element_with_options);
-        //     console.log(`after pushing ${index}: ${JSON.stringify(form_elements_with_options,null,2)}`);
-        //     return;
-        // });
-        // console.log("after pushing all");
-        // return form_elements_with_options;
     },
 
     publishEvent: (event_id) => {
@@ -124,6 +123,13 @@ const EventsManager = {
 
     unpublishEvent: (event_id) => {
         return Events.unpublishEvent(event_id);
+    },
+
+    getRegistrationFormData: async function (event_id){
+        const event_form_elements_obj = await this.getEventFormElements(event_id);
+        const ticket_types = await this.getAllTickets(event_id);
+        const event_name = await Events.getName(event_id);
+        return {event_id, ticket_types, event_form_elements_obj, event_name:event_name[0]};
     }
     
 }

@@ -2,7 +2,6 @@ const $ = require('jquery');
 const ApplicationState = require('./application_state.js');
 const config = require('./client_config.js');
 
-
 const a = ['','one ','two ','three ','four ', 'five ','six ','seven ','eight ','nine ','ten ','eleven ','twelve ','thirteen ','fourteen ','fifteen ','sixteen ','seventeen ','eighteen ','nineteen '];
 const b = ['', '', 'twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
 
@@ -14,7 +13,7 @@ const utils = {
 			ajax_params.data = {};
 		}
 		$.ajax({
-			url:ajax_params.url,
+			url,
 			data:ajax_params.data,
 			method:method,
 			dataType:'json'
