@@ -5927,6 +5927,32 @@ footer .btn {
   margin-left: 2%;
 }
 
+.task_name{
+  cursor: pointer;
+  position: relative;
+  display: block;
+  height: 100%;
+  width: 100%;
+  padding: 12px 8px;
+}
+
+.task_name:hover{
+  background-color: #eee;
+}
+
+.event_tasks_container td:nth-child(1){
+  padding: 8px 8px;
+  width: 25%;
+}
+
+.events_tasks_container td:nth-child(2){
+  width: 45;
+}
+
+.events_tasks_container td:nth-child(3){
+  width: 30%;
+}
+
 /*********ATTENDEE FORM REGISTRATION CSS****************/
 
 #registration_form_container{
@@ -6001,3 +6027,5 @@ footer .btn {
 .element_label.valign_top{
   margin-top: 1%;
 }
+
+/***********************ATTENDEE FORM REGISTRATION CSS ENDS**********************/

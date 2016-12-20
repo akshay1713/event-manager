@@ -1,14 +1,36 @@
 import React from 'react';
 import  ReactDOM from 'react-dom';
 import utils from './utils';
-import FocusableInput from './views/custom_components';
+import {FocusableInput} from './views/custom_components';
 import Ink from 'react-ink';
 import Select from 'react-select';
+import {UnsuccessfulRegistration, SuccessfulRegistration} from './views/post_registration-view';
 
 const form_elements = window.__event_form_elements__;
 const ticket_types = window.__ticket_types__;
 const event_id = window.__event_id__;
-console.log(ticket_types);
+const event_name = window.__event_name__;
+console.log(event_name);
+
+const form_target = document.getElementById("registration_form_container");
+
+const postRegistrationFlow = (response) => {
+    console.log(response.status);
+    if(response.status){
+        const attendee_details = response.attendee_status;
+        ReactDOM.render(
+            <SuccessfulRegistration order_id = {attendee_details._id} email = {attendee_details.email}
+            quantity = {attendee_details.quantity} event_name = {event_name}/>,
+            form_target
+        );
+    }
+    else{
+        ReactDOM.render(
+            <UnsuccessfulRegistration/>,
+            form_target
+        );
+    }
+};
 
 const RegistrationForm = React.createClass({
     componentDidMount: function(){},
@@ -66,7 +88,7 @@ const RegistrationForm = React.createClass({
             data:{form_fields, ticketid, quantity},
             method:"POST",
             url:`/events/submit_form/${event_id}`,
-            callback:(response) => {console.log(response);}
+            callback:postRegistrationFlow
         })
 
     },
@@ -195,7 +217,6 @@ const TicketTypesSelector = React.createClass({
     }
 });
 
-const form_target = document.getElementById("registration_form_container");
 ReactDOM.render(
     <RegistrationForm form_elements = {form_elements}/>,
     form_target

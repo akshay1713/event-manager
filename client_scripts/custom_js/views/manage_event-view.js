@@ -4,8 +4,10 @@ const DateTime = require('react-datetime');
 const combinedStore = require('../redux_state_manager.js');
 const TicketTypes = require('./ticket_types-view.js');
 import Ink from 'react-ink';
-import FocusableInput from './custom_components';
+import {FocusableInput, FocusableTextArea} from './custom_components';
 import Select from 'react-select';
+import Modal, {closeStyle} from 'simple-react-modal'
+
 
 const ManageEventContainer = React.createClass({
     componentWillMount: function(){},
@@ -59,15 +61,16 @@ const ManageEventContainer = React.createClass({
 			}
 		});
 	},
-	createTask: function(task_name, event_id){
+	createTask: function(task_name, task_description, event_id){
 		utils.ajax({
 			url:"/events/create_task/"+event_id,
 			method:"POST",
-			data:{task_name},
+			data:{task_name, task_description},
 			callback:(response) => {
 				combinedStore.dispatch({
 					type:"CREATE_TASK",
-					tasks:[{name: task_name, id: response[0], status: "pending", userid: null}]
+					tasks:[{name: task_name, id: response[0], status: "pending", userid: null, 
+					last_userid:null, description:task_description}]
 				});
 			}
 		});
@@ -170,50 +173,70 @@ const Tickets = React.createClass({
 
 const SelectedEventTasks = React.createClass({
 	getInitialState:function(){
-		return {task_name:""}
+		return {task_name:"", task_description:"", show_task:"", last_user_name:"", task_name:""}
 	},
 	componentDidMount: function(){
 	},
 	componentWillReceiveProps:function(){
-		// console.log("update nahi hua");
-		this.setState({task_name:""});
+		this.setState({task_name:"", task_description:""});
 	},
 	updateTaskName:function(e){
-		this.setState({task_name:e.target.value});
+		const task_name = e.target.value;
+		this.setState(utils.updateReactState(this.state, {task_name}));
 	},
-	getTaskNameAndCreate:function(){
+	updateTaskDescription:function(e){
+		const task_description = e.target.value;
+		this.setState(utils.updateReactState(this.state, {task_description}));
+	},
+	getTaskDetailsAndCreate:function(){
 		const task_name = this.state.task_name;
+		const task_description = this.state.task_description;
 		const event_id = this.props.event_id;
-		this.props.createTask(task_name, event_id);
-		this.setState({task_name:""});
+		this.props.createTask(task_name, task_description, event_id);
+		this.setState({task_name:"", task_description:""});
+	},
+	showTaskModal:function(last_userid, description, task_name){
+		const show_task = true;
+		const user = this.props.users.find(user => user.id === last_userid);
+		const last_user_name = user.firstname + " " + user.lastname;
+		this.setState(utils.updateReactState(this.state, {show_task, last_user_name, description, task_name}));
+	},
+	closeTaskModal:function(){
+		const show_task = false, last_user_name = "", description = "";
+		this.setState(utils.updateReactState(this.state, {show_task, last_user_name, description}));
 	},
 	render: function(){
-		// console.log("task name should be ",this.state.task_name);
 		return (
 			<div className="event_tasks_container">
-			<div className="card">
-				<div className="card-header" data-background-color="purple">
-					<h4 className = "title">Tasks</h4>
+				<div className="card">
+					<div className="card-header" data-background-color="purple">
+						<h4 className = "title">Tasks</h4>
+					</div>
+					<div className="card-content table-responsive">
+						<table className="table">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Assigned to</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>{this.props.tasks.map(this.renderTask)}</tbody>
+						</table>
+					</div>
 				</div>
-				<div className="card-content table-responsive">
-					<table className="table">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Assigned to</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>{this.props.tasks.map(this.renderTask)}</tbody>
-					</table>
+				<div className="create_task_container">
+					<FocusableInput input_class="create_task" value = {this.state.task_name}
+						onBlur = {this.updateTaskName} is_controlled = {true} placeholder="Task name"/>
+					<FocusableTextArea input_class="task_description" value = {this.state.task_description}
+						onBlur = {this.updateTaskDescription} is_controlled = {true} placeholder="Task Description"/>
+					<div>
+						<button onClick = {this.getTaskDetailsAndCreate} className="btn btn-primary">
+						Create a new task</button>
+					</div>
 				</div>
-			</div>
-			<div className="create_task_container">
-				<FocusableInput input_class="create_task" value = {this.state.task_name} value={this.state.task_name}
-					onBlur = {this.updateTaskName} is_controlled = {true} placeholder="Task name"/>
-			<div><button onClick = {this.getTaskNameAndCreate} className="btn btn-primary">
-			Create a new task</button></div>
-			</div>
+				<TaskDetails show_task = {this.state.show_task} last_user_name = {this.state.last_user_name} 
+				description = {this.state.description} closeTaskModal = {this.closeTaskModal} task_name = {this.state.task_name}/>
 			</div>
 		);
 	},
@@ -232,7 +255,9 @@ const SelectedEventTasks = React.createClass({
 		return (
 			<tr key={task.id}>
 			<td>
-				{task.name} 
+				<span className="task_name" onClick = {(e) => {this.showTaskModal(task.last_userid, task.description, task.name)}}>
+					{task.name} 
+				</span>
 			</td>
 			<td>
 				<Select
@@ -258,6 +283,22 @@ const SelectedEventTasks = React.createClass({
 		const is_assigned = user.id === task.userid;
 		return (
 			<option value = {user.id} selected = {is_assigned}>{name_or_email}</option>
+		);
+	}
+});
+
+const TaskDetails = React.createClass({
+	render: function(){
+		return(
+			<div>
+				<Modal
+				closeOnOuterClick={true}
+				show={this.props.show_task}>
+				<a key="close" style={closeStyle} onClick={this.props.closeTaskModal}>X</a>
+				<div key="content">Task Name: {this.props.task_name} <br/>Last Updated By: {this.props.last_user_name}
+				<br/>Description: {this.props.description}</div>
+				</Modal>
+			</div>
 		);
 	}
 });

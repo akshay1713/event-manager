@@ -58,6 +58,7 @@
     "react-wysiwyg-editor": "0.0.9",
     "redux": "^3.6.0",
     "runkoa": "^1.3.1",
+    "simple-react-modal": "^0.5.1",
     "webpack": "^1.3.0",
     "webpack-dev-server": "^1.16.2",
     "xoauth2": "^1.2.0"

@@ -70,8 +70,16 @@ router.get('/google_callback',
   })
 );
 
+//TODO:remove from here
+const TeamManager = require('./classes/TeamManager');
+const EventsManager = require('./classes/EventsManager');
+const Utils = require('./classes/Utils');
+
 router.get('/account',middleware.ensureAuthenticated ,async function (ctx, next) {
+  // const events = await EventsManager.getAllEvents(Utils.getSessionParam(ctx,'teamid'));
+  const team_members = await TeamManager.getAllTeamMembers(Utils.getSessionParam(ctx,'teamid'));
   await ctx.render('account', {
+     team_members
   });
 })
 

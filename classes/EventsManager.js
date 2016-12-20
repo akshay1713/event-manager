@@ -27,6 +27,10 @@ const EventsManager = {
     getEventData: async function(eventid) {
         const tasks = await this.getAllTasks(eventid);
         const tickets = await this.getAllTickets(eventid);
+        const attendees = [];
+        tickets.forEach((ticket) => {
+            
+        });
         return {tasks, tickets};
     },
 
@@ -38,20 +42,20 @@ const EventsManager = {
         return Tickets.getAllTickets(eventid);
     },
 
-    createTask: (name,eventid) => {
-        return Tasks.createNew(name,eventid);
+    createTask: (name,description,eventid) => {
+        return Tasks.createNew(name,description,eventid);
     },
 
     getAllTasks: (eventid) => {
         return Tasks.getAllTasks(eventid);
     },
 
-    assignTask: (taskid,userid) => {
-      return Tasks.assignTask(taskid,userid);
+    assignTask: (taskid, userid, last_userid) => {
+      return Tasks.assignTask(taskid, userid, last_userid);
     },
 
-    changeTaskStatus: (taskid,status) => {
-        return Tasks.changeTaskStatus(taskid,status);
+    changeTaskStatus: (taskid, status, last_userid) => {
+        return Tasks.changeTaskStatus(taskid, status, last_userid);
     },
 
     createEventForm: (eventid) => {
@@ -78,7 +82,18 @@ const EventsManager = {
         console.log("saving data ",attendee_data);
         let attendee_status =  await new EventAttendees(attendee_data).save();
         let ticket_status = await Tickets.updateTicketCount(ticketid, quantity);
-        return attendee_data && attendee_status;
+        if(ticket_status && attendee_status){
+            delete attendee_status.extra_data;
+            return {
+                status:true,
+                attendee_status
+            }
+        }
+        else{
+            return{
+                status:false
+            }
+        }
     },
 
     addRegistrationFormFields: async (event_id, form_fields) => {
@@ -129,7 +144,7 @@ const EventsManager = {
         const event_form_elements_obj = await this.getEventFormElements(event_id);
         const ticket_types = await this.getAllTickets(event_id);
         const event_name = await Events.getName(event_id);
-        return {event_id, ticket_types, event_form_elements_obj, event_name:event_name[0]};
+        return {event_id, ticket_types, event_form_elements_obj, event_name:event_name[0].name};
     }
     
 }

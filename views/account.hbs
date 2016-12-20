@@ -5,6 +5,20 @@
 <p>Teamid: {{user.teamid}}</p>
 -->
 <div id = "em_wrapper"></div>
+<script>
+    let team_members = [];
+    {{#each team_members}}
+        team_members.push({
+            firstname:"{{firstname}}",
+            lastname:"{{lastname}}",
+            status:parseInt("{{is_active}}"),
+            id:parseInt("{{id}}"),
+            email:"{{email}}",
+            status:"{{status}}"
+        });
+    {{/each}}
+    window.__team_members__ = team_members
+</script>
 <link href="/stylesheets/bootstrap.css" rel="stylesheet">
 <link href="/stylesheets/style.css" rel="stylesheet">
 {{!--<link rel="stylesheet" href="https://unpkg.com/purecss@0.6.0/build/pure-min.css">--}}

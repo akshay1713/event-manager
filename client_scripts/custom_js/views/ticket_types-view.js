@@ -1,7 +1,7 @@
 const React = require("react");
 import Select from 'react-select';
 import Utils from '../utils'
-import FocusableInput from './custom_components'
+import {FocusableInput} from './custom_components'
 
 const TicketTypes = React.createClass({
     selectOptions:[],

@@ -2,29 +2,29 @@ const knex = require('./BaseModel').knex;
 const table = 'Tasks';
 
 const Tasks = {
-	createNew: (name,eventid) => {
+	createNew: (name,description,eventid) => {
         console.log(name,eventid);
 		return knex(table)
 		.returning('id','name')
-		.insert({name,eventid});
+		.insert({name,description,eventid});
 	},
 
     getAllTasks: (eventid) => {
         return knex(table)
-        .select('id','name','userid','status')
+        .select('id','name','userid','status','description','last_userid')
         .where({eventid});
     },
 
-    assignTask: (taskid,userid) => {
+    assignTask: (taskid, userid, last_userid) => {
         return knex(table)
         .where({'id':taskid})
-        .update({userid});
+        .update({userid, last_userid});
     },
 
-    changeTaskStatus: (taskid,status) => {
+    changeTaskStatus: (taskid, status, last_userid) => {
          return knex(table)
         .where({'id':taskid})
-        .update({status});
+        .update({status, last_userid});
     }
 };
 

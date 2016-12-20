@@ -1,7 +1,9 @@
 const Redux = require('redux');
 
+const users = window.__team_members__;
+console.log(users);
 const initialTeamState = {
-	users:[]
+	users
 };
 
 const initialEventState = {
@@ -14,7 +16,8 @@ const initialCurrentEventState = {
 	event_id:null,
 	tasks:[],
 	tickets:[],
-	form_created:null
+	form_created:null,
+	attendees:[]
 };
 
 const initialFormElementState = {

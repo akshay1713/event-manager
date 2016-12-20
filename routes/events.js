@@ -22,15 +22,18 @@ router.post('/add_ticket/:id', middleware.ensureAuthenticated, async function(ct
 });
 
 router.post('/create_task/:id',middleware.ensureAuthenticated, async function(ctx,next){
-    ctx.body = await EventsManager.createTask(Utils.getPostParams(ctx,'task_name'),Utils.getUrlParams(ctx,'id'));
+    ctx.body = await EventsManager.createTask(Utils.getPostParams(ctx,'task_name'), 
+    Utils.getPostParams(ctx, 'task_description'), Utils.getUrlParams(ctx,'id'));
 });
 
 router.post('/assign_task/:task_id',middleware.ensureAuthenticated, async function(ctx,next){
-    ctx.body = await EventsManager.assignTask(Utils.getUrlParams(ctx,'task_id'),Utils.getPostParams(ctx,'userid'));
+    ctx.body = await EventsManager.assignTask(Utils.getUrlParams(ctx,'task_id'), 
+    Utils.getPostParams(ctx, 'userid'), Utils.getSessionParam(ctx, 'id'));
 });
 
 router.post('/change_task_status/:task_id',middleware.ensureAuthenticated, async function(ctx,next){
-    ctx.body = await EventsManager.changeTaskStatus(Utils.getUrlParams(ctx,'task_id'),Utils.getPostParams(ctx,'status'));
+    ctx.body = await EventsManager.changeTaskStatus(Utils.getUrlParams(ctx,'task_id'), 
+    Utils.getPostParams(ctx,'status'),Utils.getSessionParam(ctx, 'id'));
 });
 
 router.post('/create_form/:event_id',middleware.ensureAuthenticated, async function(ctx,next){
@@ -39,8 +42,6 @@ router.post('/create_form/:event_id',middleware.ensureAuthenticated, async funct
 
 router.get('/event_form/:event_id', async function(ctx,next){
     const eventid = Utils.getUrlParams(ctx, 'event_id');
-    // const event_form_elements_obj = await EventsManager.getEventFormElements(eventid);
-    // const ticket_types = await EventsManager.getAllTickets(eventid);
     const registration_data =  await EventsManager.getRegistrationFormData(eventid);
     await ctx.render('event_form', registration_data);
 });

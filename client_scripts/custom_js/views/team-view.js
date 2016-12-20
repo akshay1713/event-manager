@@ -4,7 +4,7 @@ const combinedStore = require('../redux_state_manager.js');
 import Validation from 'react-validation';
 import Select from 'react-select';
 import Ink from 'react-ink';
-import FocusableInput from './custom_components';
+import {FocusableInput} from './custom_components';
 
 const TeamContainer = React.createClass({
 	componentWillMount: function(){

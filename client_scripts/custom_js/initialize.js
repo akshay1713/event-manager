@@ -18,6 +18,7 @@ ReactDOM.render(
 combinedStore.subscribe(() => {
 	set_application_state(ApplicationState);
 });
+
 const set_application_state = (state_changes) => {
 	Object.assign(ApplicationState,state_changes);
 	const target_content = document.getElementById("em_page_wrapper");
