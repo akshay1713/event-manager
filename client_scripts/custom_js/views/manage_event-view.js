@@ -127,12 +127,10 @@ const Tickets = React.createClass({
 		this.setState({addMoreTickets: !this.state.addMoreTickets});
 	},
 	showAttendeesForTicket: function(ticketid){
-		console.log("showing ",ticketid);
 		const tickets = this.props.tickets;
 		const selected_ticket = tickets.find(ticket => ticket.id === ticketid);
 		const selected_ticket_attendees = this.props.attendees.filter(attendee => attendee.ticketid === ticketid);
 		this.setState(utils.updateReactState(this.state, {show_ticket_attendees:true, selected_ticket_attendees}));
-		console.log(selected_ticket_attendees);
 	},
 	closeAttendeesModal: function(){
 		this.setState(utils.updateReactState(this.state, {show_ticket_attendees:false, selected_ticket_attendees:[]}));
@@ -327,60 +325,112 @@ const TaskDetails = React.createClass({
 });
 
 const TicketAttendees = React.createClass({
+	getInitialState: function(){
+		return {
+			open_attendee_ids: []
+		}
+	},
 	render: function(){
+		let attendee_row = [], attendee_extra_data_row = [], attendee_complete_row;
+		this.props.attendees.map(attendee => {
+			attendee_complete_row = null;
+			attendee_complete_row = <div className="attendee_row">;
+			attendee_complete_row += <AttendeeMandatoryDetails attendee = {attendee} toggleExtraDataRow = {this.toggleExtraDataRow}/>;
+			attendee_complete_row += <AttendeeExtraData attendee_extra_data = {attendee.extra_data} is_hidden = {this.state.open_attendee_ids.indexOf(attendee._id) === -1}/>;
+			attendee_complete_row += </div>
+			attendee_row.push(attendee_complete_row)
+		});
 		return(
 			<div className="attendee_details">
 				<Modal
 				closeOnOuterClick={true}
 				show={this.props.show_ticket_attendees}>
 				<a key="close" style={closeStyle} onClick={this.props.closeAttendeesModal}>X</a>
-				<table>
-					<thead>
-						<tr>
-							<td>Name</td>
-							<td>Email</td>
-							<td>Quantity</td>
-							<td>Order Id</td>
-						</tr>
-					</thead>
-					<tbody>
-					{this.props.attendees.map(attendee => this.renderAttendee(attendee))}
-					</tbody>
-				</table>
+				<div className="attendee_table">
+					<div className="attendee_row">
+						<div className="attendee_cell">Name</div>
+						<div className="attendee_cell">Email</div>
+						<div className="attendee_cell">Quantity</div>
+						<div className="attendee_cell">Order Id</div>
+					</div>
+					{attendee_row}
+				</div>
 				</Modal>
 			</div>
 		);
 	},
+	toggleExtraDataRow: function(attendee_id){
+		const open_attendee_ids = this.state.open_attendee_ids;
+		const current_position = open_attendee_ids.indexOf(attendee_id);
+		if(current_position !== -1){
+			open_attendee_ids.splice(current_position,1);
+		}
+		else{
+			open_attendee_ids.push(attendee_id);
+		}
+		this.setState(open_attendee_ids);
+	},
 	renderAttendee: function(attendee){
 		return(
-			<div>
-			<tr>
-				<td>{attendee.firstname} {attendee.lastname}</td>
-				<td>{attendee.email}</td>
-				<td>{attendee.quantity}</td>
-				<td>{attendee._id}</td>
-			</tr>
-			{this.renderAttendeeExtraParams(attendee.extra_data)}
+			<div className="attendee_row">
+				<div className="attendee_cell">{attendee.firstname} {attendee.lastname}</div>
+				<div className="attendee_cell">{attendee.email}</div>
+				<div className="attendee_cell">{attendee.quantity}</div>
+				<div className="attendee_cell">{attendee._id}</div>
 			</div>
 		);
 	},
-	renderAttendeeExtraParams: function(attendee_extra_params){
+	renderAttendeeExtraData: function(attendee_extra_data, is_hidden){
+		const display_class = (is_hidden) ? "hidden" : "";
 		let param_keys = [], param_values = [];
-		Object.keys(attendee_extra_params).forEach(key => {
-			param_keys.push(<td>{key}</td>);
-			param_values.push(<td>{attendee_extra_params[key]}</td>);
+		Object.keys(attendee_extra_data).forEach(key => {
+			param_keys.push(<div className="attendee_cell">{key}</div>);
+			param_values.push(<div className="attendee_cell">{attendee_extra_data[key]}</div>);
 		});
 		return(
-			<div>
-			<tr>
+			<div className={"attendee_extra_data "+display_class}>
+			<div className="attendee_row">
 			{param_keys}
-			</tr>
-			<tr>
+			</div>
+			<div className="attendee_row">
 			{param_values}
-			</tr>
+			</div>
 			</div>
 		);
 	}
 });
+
+const AttendeeMandatoryDetails = React.createClass({
+	render: function(){
+		const attendee = this.props.attendee;
+		return(
+			<div>
+				<div className="attendee_cell">{attendee.firstname} {attendee.lastname}</div>
+				<div className="attendee_cell">{attendee.email}</div>
+				<div className="attendee_cell">{attendee.quantity}</div>
+				<div className="attendee_cell">{attendee._id}</div>
+				<div className="attendee_cell" onClick = {e => this.props.toggleExtraDataRow(attendee._id)}>View extra data</div>
+			</div>
+		);
+	}
+});
+
+const AttendeeExtraData = React.createClass({
+	render: function(){
+		const attendee_extra_data = this.props.attendee_extra_data;
+		const is_hidden = this.props.is_hidden;
+		const display_class = (is_hidden) ? "hidden" : "";
+		let param_keys = [], param_values = [];
+		Object.keys(attendee_extra_data).forEach(key => {
+			param_keys.push(<div className="attendee_cell">{key}</div>);
+			param_values.push(<div className="attendee_cell">{attendee_extra_data[key]}</div>);
+		});
+		return(
+			<div>
+			{param_values}
+			</div>
+		);
+	}
+})
 
 module.exports = ManageEventContainer;

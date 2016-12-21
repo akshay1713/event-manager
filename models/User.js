@@ -4,7 +4,7 @@ const table = 'User';
 
 const User = {
 	findById : (id) => {
-		 knex.select().where('id',id).from(table);
+		 return knex.select().where('id',id).from(table);
 	},
 
 	createNew: (name={}, email, google_id=null,status='joined') => {	

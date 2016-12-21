@@ -5965,6 +5965,23 @@ footer .btn {
   width: 100%;
 }
 
+.attendee_table{
+  display: table;
+  width: 100%;
+}
+
+.attendee_row{
+  display: table-row;
+}
+
+.attendee_cell{
+  display: table-cell;
+}
+
+.attendee_extra_data{
+  display: table-row-group;
+}
+
 /*********ATTENDEE FORM REGISTRATION CSS****************/
 
 #registration_form_container{

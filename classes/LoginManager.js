@@ -8,7 +8,8 @@ const LoginManager = {
 		console.log(existing_user);
 		if(existing_user.length === 0){
 			const new_userid = await RegistrationManager.registerNewUser(user_profile.name,user_profile.emails[0].value,user_profile.id,access_token,refresh_token);
-			existing_user = await User.findById(new_userid);
+			existing_user = await User.findById(new_userid[0]);
+			console.log("es",existing_user,"user",new_userid);
 		}
 		else if(existing_user[0].status === 'invited'){
 			console.log('registering invited user');
