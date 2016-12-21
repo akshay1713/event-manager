@@ -1,14 +1,14 @@
 const db_username = process.env.DB_USER_NAME || 'root';
-const db_password = process.env.DB_PASSWORD || 'root';
+const db_password = process.env.DB_PASSWORD || 'kri';
 const db_name = process.env.DB_NAME || 'knex_test';
 const db_host = process.env.DB_HOST || '127.0.0.1';
-const db_port = process.env.DB_PORT || 3306;
+const db_port = process.env.DB_PORT || 3307;
 
 const session_store_host = process.env.SESSION_STORE_HOST || '127.0.0.1';
 const session_store_user = process.env.SESSION_STORE_USER || 'root';
 const session_store_db = process.env.SESSION_STORE_DB || 'sessions';
-const session_store_password = process.env.SESSION_STORE_PASSWORD || 'root';
-const session_store_port = process.env.SESSION_STORE_PORT || 3306 
+const session_store_password = process.env.SESSION_STORE_PASSWORD || 'kri';
+const session_store_port = process.env.SESSION_STORE_PORT || 3307
 const mongodb_uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/event_attendees'
 
 const emailer_sender = process.env.em_sender;
