@@ -21,6 +21,7 @@ const ManageEventContainer = React.createClass({
 					type:"UPDATE_CURRENT_EVENT",
 					tasks:response.tasks,
 					tickets:response.tickets,
+					attendees:response.attendees,
 					event_id
 				});
 			}
@@ -75,7 +76,7 @@ const ManageEventContainer = React.createClass({
 			}
 		});
 	},
-	assignTaskToUser:function(taskid, userid){
+	assignTaskToUser: function(taskid, userid){
 		utils.ajax({
 			url:"/events/assign_task/"+taskid,
 			method:"POST",
@@ -108,9 +109,9 @@ const ManageEventContainer = React.createClass({
 			createTask = {this.createTask} users = {this.props.user_state.users} assignTaskToUser = {this.assignTaskToUser} 
 			changeTaskStatus = {this.changeTaskStatus}/>
 			<Tickets tickets = {this.props.current_event_state.tickets} event_id = {this.props.current_event_state.event_id}
-			createTicket = {this.createTicket}/>
+			createTicket = {this.createTicket} attendees = {this.props.current_event_state.attendees}/>
 			</div>
-			);
+		);
 	}
 });
 
@@ -120,10 +121,21 @@ const Tickets = React.createClass({
 	componentWillReceiveProps:function(next_props){
 	},
 	getInitialState: function(){
-		return {addMoreTickets:false}
+		return {addMoreTickets:false, show_ticket_attendees:false, selected_ticket_attendees:[]}
 	},
 	toggleAddMoreTickets: function(){
 		this.setState({addMoreTickets: !this.state.addMoreTickets});
+	},
+	showAttendeesForTicket: function(ticketid){
+		console.log("showing ",ticketid);
+		const tickets = this.props.tickets;
+		const selected_ticket = tickets.find(ticket => ticket.id === ticketid);
+		const selected_ticket_attendees = this.props.attendees.filter(attendee => attendee.ticketid === ticketid);
+		this.setState(utils.updateReactState(this.state, {show_ticket_attendees:true, selected_ticket_attendees}));
+		console.log(selected_ticket_attendees);
+	},
+	closeAttendeesModal: function(){
+		this.setState(utils.updateReactState(this.state, {show_ticket_attendees:false, selected_ticket_attendees:[]}));
 	},
 	render: function(){
 		let add_tickets_class = "hidden", add_tickets_text = "Add More Tickets";
@@ -150,11 +162,15 @@ const Tickets = React.createClass({
 					</table>
 				</div>
 			</div>
+			<TicketAttendees show_ticket_attendees = {this.state.show_ticket_attendees} 
+			attendees = {this.state.selected_ticket_attendees}/>
 			<div className="add_tickets_container">
-				<button onClick = {this.toggleAddMoreTickets} className="add_tickets_btn btn btn-primary">{add_tickets_text}<Ink/></button>
+				<button onClick = {this.toggleAddMoreTickets} className="add_tickets_btn btn btn-primary">
+				{add_tickets_text}<Ink/></button>
 				<div className = {add_tickets_class+" new_tickets_container"}>
 					<TicketTypes ticket_types_count={4}/>
-					<div><button onClick = {()=>{this.props.createTicket(this.props.event_id)}} className="btn btn-primary">Add Tickets<Ink/></button></div>
+					<div><button onClick = {()=>{this.props.createTicket(this.props.event_id)}} className="btn btn-primary">
+					Add Tickets<Ink/></button></div>
 				</div>
 				</div>
 			</div>
@@ -163,7 +179,11 @@ const Tickets = React.createClass({
 	renderTicket: function(ticket){
 		return (
 			<tr key={ticket.id}>
-				<td>{ticket.name}</td>
+				<td>
+					<span onClick = { e => {this.showAttendeesForTicket(ticket.id)}}>
+					{ticket.name}
+					</span>
+				</td>
 				<td>{ticket.maximum_available}</td>
 				<td>{ticket.booked}</td>
 			</tr>
@@ -227,16 +247,19 @@ const SelectedEventTasks = React.createClass({
 				</div>
 				<div className="create_task_container">
 					<FocusableInput input_class="create_task" value = {this.state.task_name}
-						onBlur = {this.updateTaskName} is_controlled = {true} placeholder="Task name"/>
-					<FocusableTextArea input_class="task_description" value = {this.state.task_description}
-						onBlur = {this.updateTaskDescription} is_controlled = {true} placeholder="Task Description"/>
+					onBlur = {this.updateTaskName} is_controlled = {true} placeholder="Task name"/>
+					<FocusableTextArea input_class="task_description" 
+					value = {this.state.task_description}
+					onBlur = {this.updateTaskDescription} is_controlled = {true} 
+					placeholder="Task Description"/>
 					<div>
 						<button onClick = {this.getTaskDetailsAndCreate} className="btn btn-primary">
 						Create a new task</button>
 					</div>
 				</div>
 				<TaskDetails show_task = {this.state.show_task} last_user_name = {this.state.last_user_name} 
-				description = {this.state.description} closeTaskModal = {this.closeTaskModal} task_name = {this.state.task_name}/>
+				description = {this.state.description} closeTaskModal = {this.closeTaskModal} 
+				task_name = {this.state.task_name}/>
 			</div>
 		);
 	},
@@ -290,7 +313,7 @@ const SelectedEventTasks = React.createClass({
 const TaskDetails = React.createClass({
 	render: function(){
 		return(
-			<div>
+			<div className = "task_details_modal">
 				<Modal
 				closeOnOuterClick={true}
 				show={this.props.show_task}>
@@ -298,6 +321,63 @@ const TaskDetails = React.createClass({
 				<div key="content">Task Name: {this.props.task_name} <br/>Last Updated By: {this.props.last_user_name}
 				<br/>Description: {this.props.description}</div>
 				</Modal>
+			</div>
+		);
+	}
+});
+
+const TicketAttendees = React.createClass({
+	render: function(){
+		return(
+			<div className="attendee_details">
+				<Modal
+				closeOnOuterClick={true}
+				show={this.props.show_ticket_attendees}>
+				<a key="close" style={closeStyle} onClick={this.props.closeAttendeesModal}>X</a>
+				<table>
+					<thead>
+						<tr>
+							<td>Name</td>
+							<td>Email</td>
+							<td>Quantity</td>
+							<td>Order Id</td>
+						</tr>
+					</thead>
+					<tbody>
+					{this.props.attendees.map(attendee => this.renderAttendee(attendee))}
+					</tbody>
+				</table>
+				</Modal>
+			</div>
+		);
+	},
+	renderAttendee: function(attendee){
+		return(
+			<div>
+			<tr>
+				<td>{attendee.firstname} {attendee.lastname}</td>
+				<td>{attendee.email}</td>
+				<td>{attendee.quantity}</td>
+				<td>{attendee._id}</td>
+			</tr>
+			{this.renderAttendeeExtraParams(attendee.extra_data)}
+			</div>
+		);
+	},
+	renderAttendeeExtraParams: function(attendee_extra_params){
+		let param_keys = [], param_values = [];
+		Object.keys(attendee_extra_params).forEach(key => {
+			param_keys.push(<td>{key}</td>);
+			param_values.push(<td>{attendee_extra_params[key]}</td>);
+		});
+		return(
+			<div>
+			<tr>
+			{param_keys}
+			</tr>
+			<tr>
+			{param_values}
+			</tr>
 			</div>
 		);
 	}

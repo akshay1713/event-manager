@@ -1,7 +1,6 @@
 const Redux = require('redux');
 
 const users = window.__team_members__;
-console.log(users);
 const initialTeamState = {
 	users
 };
@@ -70,6 +69,7 @@ const current_events_reducer = (state = initialCurrentEventState, action) => {
 		current_event_state.tasks = action.tasks;
 		current_event_state.tickets = action.tickets;
 		current_event_state.event_id = action.event_id;
+		current_event_state.attendees = action.attendees;
 	}
 	else if (action.type === "CREATE_TASK"){
 		current_event_state.tasks = current_event_state.tasks.concat(action.tasks);
@@ -85,7 +85,6 @@ const current_events_reducer = (state = initialCurrentEventState, action) => {
 	else if (action.type === "CHANGE_TASK_STATUS"){
 		current_event_state.tasks.some((task) => {
 			if(task.id === action.task_details.taskid){
-				console.log("changing status to ",action.task_details.status);
 				task.status = action.task_details.status
 				return true;
 			}

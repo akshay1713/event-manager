@@ -6,6 +6,14 @@ const Emailer = require('./Emailer');
 const EventFormElements = require('../models/EventFormElements');
 const EventFormElementOptions = require('../models/EventFormElementOptions');
 
+const getAllTickets = (eventid) => {
+    return Tickets.getAllTickets(eventid);
+};
+
+const getAllTasks = (eventid) => {
+    return Tasks.getAllTasks(eventid);
+}
+
 const EventsManager = {
     getAllEvents: (teamid) => {
         return Events.getAllEvents(teamid);
@@ -25,29 +33,19 @@ const EventsManager = {
 	},
 
     getEventData: async function(eventid) {
-        const tasks = await this.getAllTasks(eventid);
-        const tickets = await this.getAllTickets(eventid);
-        const attendees = [];
-        tickets.forEach((ticket) => {
-            
-        });
-        return {tasks, tickets};
+        const tasks = await getAllTasks(eventid);
+        const tickets = await getAllTickets(eventid);
+        const ticketids = tickets.map(ticket => ticket.id);
+        const attendees = await EventAttendees.find().where('ticketid').in(ticketids);
+        return {tasks, tickets, attendees};
     },
 
     createTickets: (ticket_data_array) => {
         return Tickets.createNew(ticket_data_array)
     },
 
-    getAllTickets: (eventid) => {
-        return Tickets.getAllTickets(eventid);
-    },
-
     createTask: (name,description,eventid) => {
         return Tasks.createNew(name,description,eventid);
-    },
-
-    getAllTasks: (eventid) => {
-        return Tasks.getAllTasks(eventid);
     },
 
     assignTask: (taskid, userid, last_userid) => {
@@ -142,7 +140,7 @@ const EventsManager = {
 
     getRegistrationFormData: async function (event_id){
         const event_form_elements_obj = await this.getEventFormElements(event_id);
-        const ticket_types = await this.getAllTickets(event_id);
+        const ticket_types = await getAllTickets(event_id);
         const event_name = await Events.getName(event_id);
         return {event_id, ticket_types, event_form_elements_obj, event_name:event_name[0].name};
     }

@@ -318,7 +318,6 @@ const EventsList = React.createClass({
 		);
 	},
 	renderEvent: function(event){
-		console.log(event);
 		if(event.status === 'unpublished');
 		const status_field = (event.status === 'unpublished') ? <td onClick = {()=>{this.props.publishEvent(event.id)}}>
 		<span className="publish_event">Publish Event<Ink/></span></td> 

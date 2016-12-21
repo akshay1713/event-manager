@@ -5953,6 +5953,18 @@ footer .btn {
   width: 30%;
 }
 
+.task_details_modal > div > div {
+  width: 50% !important;
+} 
+
+.attendee_details > div > div{
+  width: 60% !important;
+}
+
+.attendee_details table{
+  width: 100%;
+}
+
 /*********ATTENDEE FORM REGISTRATION CSS****************/
 
 #registration_form_container{
