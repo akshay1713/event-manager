@@ -5979,7 +5979,7 @@ footer .btn {
 }
 
 .attendee_extra_data{
-  display: table-row-group;
+  visibility: hidden;
 }
 
 /*********ATTENDEE FORM REGISTRATION CSS****************/

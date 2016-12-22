@@ -331,15 +331,15 @@ const TicketAttendees = React.createClass({
 		}
 	},
 	render: function(){
-		let attendee_row = [], attendee_extra_data_row = [], attendee_complete_row;
-		this.props.attendees.map(attendee => {
-			attendee_complete_row = null;
-			attendee_complete_row = <div className="attendee_row">;
-			attendee_complete_row += <AttendeeMandatoryDetails attendee = {attendee} toggleExtraDataRow = {this.toggleExtraDataRow}/>;
-			attendee_complete_row += <AttendeeExtraData attendee_extra_data = {attendee.extra_data} is_hidden = {this.state.open_attendee_ids.indexOf(attendee._id) === -1}/>;
-			attendee_complete_row += </div>
-			attendee_row.push(attendee_complete_row)
-		});
+		if(!this.props.show_ticket_attendees){
+			return null;
+		}
+		let attendee_extra_data = [];
+		let attendee_rows = [];
+		const attendees = this.props.attendees;
+		attendees.map(attendee => attendee_rows.push(this.renderAttendee(attendee)));
+		const extra_keys = Object.keys(attendees[0].extra_data);
+		extra_keys.map(key => attendee_extra_data.push(<div className="attendee_cell attendee_extra_data">{key}</div>))
 		return(
 			<div className="attendee_details">
 				<Modal
@@ -352,8 +352,9 @@ const TicketAttendees = React.createClass({
 						<div className="attendee_cell">Email</div>
 						<div className="attendee_cell">Quantity</div>
 						<div className="attendee_cell">Order Id</div>
+						{attendee_extra_data}
 					</div>
-					{attendee_row}
+					{attendee_rows}
 				</div>
 				</Modal>
 			</div>
@@ -371,12 +372,19 @@ const TicketAttendees = React.createClass({
 		this.setState(open_attendee_ids);
 	},
 	renderAttendee: function(attendee){
+		const attendee_extra_data = attendee.extra_data;
+		let param_keys = [], param_values = [];
+		Object.keys(attendee_extra_data).forEach(key => {
+			param_keys.push(<div className="attendee_cell">{key}</div>);
+			param_values.push(<div className="attendee_cell attendee_extra_data">{attendee_extra_data[key]}</div>);
+		});
 		return(
-			<div className="attendee_row">
+			<div className = "attendee_row">
 				<div className="attendee_cell">{attendee.firstname} {attendee.lastname}</div>
 				<div className="attendee_cell">{attendee.email}</div>
 				<div className="attendee_cell">{attendee.quantity}</div>
 				<div className="attendee_cell">{attendee._id}</div>
+				{param_values}
 			</div>
 		);
 	},
@@ -384,18 +392,10 @@ const TicketAttendees = React.createClass({
 		const display_class = (is_hidden) ? "hidden" : "";
 		let param_keys = [], param_values = [];
 		Object.keys(attendee_extra_data).forEach(key => {
-			param_keys.push(<div className="attendee_cell">{key}</div>);
-			param_values.push(<div className="attendee_cell">{attendee_extra_data[key]}</div>);
+			param_values.push(<div className="attendee_cell attendee_extra_data">{attendee_extra_data[key]}</div>);
 		});
 		return(
-			<div className={"attendee_extra_data "+display_class}>
-			<div className="attendee_row">
-			{param_keys}
-			</div>
-			<div className="attendee_row">
 			{param_values}
-			</div>
-			</div>
 		);
 	}
 });
